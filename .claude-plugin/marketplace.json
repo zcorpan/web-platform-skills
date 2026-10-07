@@ -1,0 +1,14 @@
+{
+  "name": "web-platform-skills",
+  "owner": {
+    "name": "Simon Pieters"
+  },
+  "description": "Skills for web platform spec and wpt work",
+  "plugins": [
+    {
+      "name": "web-platform-skills",
+      "source": "./",
+      "description": "Skills for web platform spec and wpt work"
+    }
+  ]
+}
