@@ -24,5 +24,6 @@ description: Use when drafting or filing a spec issue (WHATWG, W3C, or other Git
 ## Pre-filling forms
 
 - GitHub: `gh issue create --repo <org>/<repo> --web --title "..." --body-file <file>`. For YAML issue forms, use `?title=`/`?body=` URL params instead; check `.github/ISSUE_TEMPLATE/*.yml` for field ids.
-- Chromium: <https://issues.chromium.org/issues/new?noWizard=true>.
+- Chromium: `https://issues.chromium.org/issues/new?noWizard=true`.
+- Mozilla Bugzilla: `https://bugzilla.mozilla.org/enter_bug.cgi?product=Core&component=<component>&bug_type=defect&short_desc=...&comment=...`, optionally with `see_also=<spec issue URL>` and `keywords=parity-chrome, parity-safari` (for missing features those browsers ship, to help prioritization; omit for minor bugs). Comments render Markdown. Find the component from similar bugs: `https://bugzilla.mozilla.org/rest/bug?quicksearch=<terms>&include_fields=id,summary,product,component`.
 - WebKit: `https://bugs.webkit.org/enter_bug.cgi?product=WebKit&component=<component>&short_desc=...&comment=...`. No Markdown. The WAF blocks `<input`, `<iframe`, `<script`, `<body`, `<form`, `<svg`, `<textarea`, `<button`, `<object`, `<embed`, `<frame>`; `<a`, `<div`, `<p`, `<span`, `<math` pass.
