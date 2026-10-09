@@ -34,7 +34,6 @@ description: Use when writing, running, or debugging web-platform-tests (wpt), o
 - Sanity-check the sync point: assert the expected work is still pending, so the test fails loudly if the state is wrong.
 - New `resources/` handler knobs: add an optional query param behind a presence check, so existing callers are unaffected.
 - A test that fails identically in all browsers for an unrelated reason is worse than no test. Verify it would pass if the feature were implemented correctly.
-- Link the single-page HTML spec (`https://html.spec.whatwg.org/#anchor`), not `/multipage/...`, in `<link rel=help>` and elsewhere.
 - Give each media/image resource in a test a distinct URL (add a query string) so a cached copy can't make a lazy resource load eagerly.
 - Don't listen for `load` on a parser-inserted iframe/img from a later script; it may already have fired. Await the window `load` event instead (such elements delay it).
 - Don't rely on named access on the global (`iframe` for `id=iframe`); use `document.querySelector()`/`getElementById()`.
