@@ -1,12 +1,13 @@
 ---
 name: httparchive
-description: Use when measuring how the web uses a feature, or estimating the web compat impact of a spec or browser change, with HTTP Archive data in BigQuery, including checking crawl-based estimates by loading sampled pages in a browser. Triggers on "HTTP Archive", "httparchive", "BigQuery", "compat impact", "how many pages use", "is this web compatible".
+description: Use when measuring how the web uses a feature, or estimating the web compat impact of a spec or browser change, with HTTP Archive data in BigQuery, including checking crawl-based estimates by loading sampled pages in a browser. Triggers on "HTTP Archive", "httparchive", "BigQuery", "compat impact", "how many pages use", "is this web compatible". Queries are billed; get the user's confirmation before running any query that isn't a dry run.
 ---
 
 # httparchive
 
 ## Cost
 
+- Queries bill the user's Google Cloud project. Before the first query that isn't a dry run, show the dry-run estimate and wait for explicit approval, even if the user asked for HTTP Archive data and especially if this skill loaded on its own. Ask again for any query above a budget or per-query cap the user approved.
 - Dry-run every query (`--dry_run`) and always pass `--maximum_bytes_billed`.
 - Cost depends on the columns read, not the rows returned: `LIMIT` doesn't reduce it, `TABLESAMPLE SYSTEM (n PERCENT)` does. Reading one `custom_metrics` sub-field over all root pages costs far less than reading `payload` or the `requests` table.
 - The dry-run number is an upper bound: sampling and filters on clustered columns (e.g. `client`) cut the bytes billed but not the estimate.
