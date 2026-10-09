@@ -33,7 +33,7 @@ description: Use when measuring how the web uses a feature, or estimating the we
 - State the denominator: crawl date, client, root pages only (`is_root_page`) or all pages, and "pages with at least one X" vs all pages.
 - Where crawl data can't decide, use separate "definitely changes" and "might change" buckets rather than guessing.
 - Check the estimate on a seeded, stratified random sample (~100 per bucket) loaded live in a browser that matches the crawl (Chrome; the mobile client's viewport is 360px wide).
-- Emulate the proposed behavior on a current engine by rewriting the page so the old algorithm produces the new result, instead of waiting for an implementation.
+- Emulate the proposed behavior on a current engine by rewriting the page so the old algorithm produces the new result. If that's impossible or only approximate (e.g. timing, parsing, or loading changes), ask the user for a browser build that implements the change, and compare it against an unmodified build of the same version.
 - Measure before twice (A, then A2 a few seconds later) and after (B). Differences between A and A2 are page noise (carousels, animations, ads). Record element boxes and scroll size, and take full-page screenshots at CSS-pixel scale.
 - Review changed pages by eye, cropped around the changed element. Rate each one broken, worse, neutral, improved, no visible change, or not assessable (consent dialog, blank page). A changed layout isn't breakage, and improvements don't offset breakage.
 - Extrapolate per stratum, (hits / sample size) × stratum size, summed. With only 1 or 2 hits, give exact binomial intervals with the estimate.
