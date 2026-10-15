@@ -18,12 +18,14 @@ description: Use when drafting or filing a spec issue (WHATWG, W3C, or other Git
 
 ## Implementation bugs
 
+- Title: for a spec change, the behavior change; for a defect, the observable symptom, not the cause or fix.
 - Link a wpt test, or describe the repro and attach a test file.
 - On non-GitHub trackers (Chromium, WebKit, Bugzilla), use full URLs, not `org/repo#N` shorthand.
 
 ## Pre-filling forms
 
+- Pre-fill the form so the user can review and edit before filing. Encode URL params with Python's `urllib.parse.urlencode`. Don't paste the URL or repeat the draft in chat.
 - GitHub: `gh issue create --repo <org>/<repo> --web --title "..." --body-file <file>`. For YAML issue forms, use `?title=`/`?body=` URL params instead; check `.github/ISSUE_TEMPLATE/*.yml` for field ids.
 - Chromium: `https://issues.chromium.org/issues/new?noWizard=true&component=<id>&title=...&description=...`. The `<id>` for a component like `Blink>Image` is `buganizer_public.component_id` in its `DIR_METADATA`; in a Chromium checkout: `git grep -l 'component: "Blink>Image"' -- '*DIR_METADATA' | head -1 | xargs grep component_id`.
-- Mozilla Bugzilla: `https://bugzilla.mozilla.org/enter_bug.cgi?product=Core&component=<component>&bug_type=defect&short_desc=...&comment=...`, optionally with `see_also=<spec issue URL>` and `keywords=parity-chrome, parity-safari` (for missing features those browsers ship, to help prioritization; omit for minor bugs). Comments render Markdown. Find the component from similar bugs: `https://bugzilla.mozilla.org/rest/bug?quicksearch=<terms>&include_fields=id,summary,product,component`.
+- Mozilla Bugzilla: `https://bugzilla.mozilla.org/enter_bug.cgi?product=Core&component=<component>&bug_type=enhancement&short_desc=...&comment=...` (`defect` if the spec didn't change), optionally with `see_also=<spec issue URL>` and `keywords=parity-chrome, parity-safari` (for missing features those browsers ship, to help prioritization; omit for minor bugs). Comments render Markdown. Find the component with `./mach file-info bugzilla-component <file>` in a Firefox checkout, else from similar bugs: `https://bugzilla.mozilla.org/rest/bug?quicksearch=<terms>&include_fields=id,summary,product,component`.
 - WebKit: `https://bugs.webkit.org/enter_bug.cgi?product=WebKit&component=<component>&short_desc=...&comment=...`. No Markdown. Find the component from similar bugs: `https://bugs.webkit.org/rest/bug?quicksearch=<terms>&include_fields=id,summary,component`. The WAF blocks `<input`, `<iframe`, `<script`, `<body`, `<form`, `<svg`, `<textarea`, `<button`, `<object`, `<embed`, `<frame>`; `<a`, `<div`, `<p`, `<span`, `<math` pass.
