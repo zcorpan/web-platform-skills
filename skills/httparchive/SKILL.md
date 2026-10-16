@@ -31,6 +31,7 @@ description: Use when measuring how the web uses a feature, or estimating the we
 ## Estimating compat impact
 
 - State the denominator: crawl date, client, root pages only (`is_root_page`) or all pages, and "pages with at least one X" vs all pages.
+- Stop early when partial data already shows the change isn't web compatible (e.g. a sample query or the first reviewed pages show breakage at a level that rules out shipping): say so, and ask whether to write up the data so far or continue. Concluding that a change is compatible needs the full check.
 - Where crawl data can't decide, use separate "definitely changes" and "might change" buckets rather than guessing.
 - Check the estimate on a seeded, stratified random sample (~100 per bucket) loaded live in a browser that matches the crawl (Chrome; the mobile client's viewport is 360px wide).
 - Emulate the proposed behavior on a current engine by rewriting the page so the old algorithm produces the new result. If that's impossible or only approximate (e.g. timing, parsing, or loading changes), ask the user for a browser build that implements the change, and compare it against an unmodified build of the same version.
