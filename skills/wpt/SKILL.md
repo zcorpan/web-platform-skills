@@ -30,6 +30,7 @@ description: Use when writing, running, or debugging web-platform-tests (wpt), o
 ## Cleaning up
 
 - When done testing, stop everything you started: `./wpt serve`, background `./wpt run`, WebDriver servers (geckodriver, chromedriver, safaridriver), browser instances, and MCP browser sessions/tabs. Check `ps` for leftovers.
+- Closing MCP tabs doesn't quit the browser. Only `firefox-nightly-mcp` has a quit tool (`close_firefox_session`); `kill` the Chrome Canary and Safari TP (`--automation`) processes. Other sessions' browsers may be running too: kill only yours, identified by ancestry (Chrome is a child of this session's `chrome-devtools-mcp`) or by a start time (`ps -o lstart`) inside your test window (Safari TP is reparented to pid 1).
 - If the user may want to test manually (e.g. you gave them a URL on a local server), leave it running and offer to stop it later.
 
 ## Writing tests
