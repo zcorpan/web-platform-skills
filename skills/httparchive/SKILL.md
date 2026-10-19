@@ -9,13 +9,14 @@ description: Use when measuring how the web uses a feature, or estimating the we
 
 - Queries bill the user's Google Cloud project. Before the first query that isn't a dry run, show the dry-run estimate and wait for explicit approval, even if the user asked for HTTP Archive data and especially if this skill loaded on its own. Ask again for any query above a budget or per-query cap the user approved.
 - Dry-run every query (`--dry_run`) and always pass `--maximum_bytes_billed`.
-- Cost depends on the columns read, not the rows returned: `LIMIT` doesn't reduce it, `TABLESAMPLE SYSTEM (n PERCENT)` does. Reading one `custom_metrics` sub-field over all root pages costs far less than reading `payload` or the `requests` table.
+- Cost depends on the columns read, not the rows returned: `LIMIT` doesn't reduce it, `TABLESAMPLE SYSTEM (n PERCENT)` does. Reading one `custom_metrics` sub-field over all root pages costs far less than reading `payload` or the `requests` table (~200 TB per crawl date in 2026).
 - The dry-run number is an upper bound: sampling and filters on clustered columns (e.g. `client`) cut the bytes billed but not the estimate.
 - Prototype on a sample, then run the full query once. 1% is fine for small columns; for very large ones (e.g. `response_body` in the `requests` table), start at `TABLESAMPLE SYSTEM (0.1 PERCENT)`.
 - Get actual cost from job stats (`bq ls -j --format=json`, `statistics.query.totalBytesBilled`). `-a` includes other users' jobs, so filter on `user_email`.
 
 ## Querying
 
+- Setup: `bq` comes with the Google Cloud CLI (`brew install --cask gcloud-cli` on macOS); `gcloud auth login`, then set a default project to bill.
 - Docs: https://har.fyi/. Pass SQL on stdin (`bq query --use_legacy_sql=false < q.sql`); a leading `--` comment in an argument is parsed as a flag.
 - `TABLESAMPLE` gives a different sample each run. For a reproducible sample, order by `FARM_FINGERPRINT(CONCAT(page, '<seed>'))` and take the first N, per stratum with `ROW_NUMBER() OVER (PARTITION BY ...)`.
 - A sampled table can't be referenced twice in one query; get totals with `GROUP BY ROLLUP(...)` instead of a `UNION`.
