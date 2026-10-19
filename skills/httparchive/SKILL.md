@@ -49,4 +49,12 @@ description: Use when measuring how the web uses a feature, or estimating the we
 - Measure before twice (A, then A2 a few seconds later) and after (B). Differences between A and A2 are page noise (carousels, animations, ads). Record element boxes and scroll size, and take full-page screenshots at CSS-pixel scale.
 - Review changed pages by eye, cropped around the changed element (the whole page when the whole document changes). Rate each one broken, worse, neutral, improved, no visible change, or not assessable (consent dialog, blank page). Rate against what the page is for: a machine-readable resource (feed, sitemap, API) losing its human-facing presentation is worse, not broken. A changed layout isn't breakage, and improvements don't offset breakage.
 - Extrapolate per stratum, (hits / sample size) × stratum size, summed. With only 1 or 2 hits, give exact binomial intervals with the estimate.
+- If the sample has few or no top-ranked pages (`rank`), run every top-ranked hit through the same steps and report them separately.
 - For batch runs, use Playwright in a venv with a few pages in parallel; append one JSON line per page and skip pages already done, so the run can resume. Wrap each page visit in an overall timeout (e.g. `asyncio.wait_for`) and record a timeout as an error: `page.evaluate` and `context.close` have no timeout of their own, so one hung page holds a slot forever and stalls the run.
+
+## Research repo
+
+- For compat research, build a reproducible repo as you go: copy `template/` from this skill's directory to `/tmp/<feature>-compat-<issue>/` and `git init` it. Keep queries, their output, sample, scripts, logs, and review images there, so it can be moved and pushed as is. Create or push a GitHub repo only when asked.
+- The template implements the batch-run rules above. Put the change in `change.py` (before/after setup, sanity check, extra measurements, change-specific auto-ratings); `harness.py`, `compare.py`, `analyze.py`, `recheck.py`, `sample.py`, and `extrapolate.py` are generic. Adapt them when the change needs it, and commit the versions that produced the data; if a script changed mid-run, say so in the README.
+- Fill in `README.md` from the template's structure. Take every number from a committed file, and before publishing rerun `analyze.py` and `extrapolate.py` on the committed data and recount the README's numbers from the files.
+- Leave out billing project, account, job IDs, and costs; give bytes processed per query. Screenshots stay out (`.gitignore`); commit the review images that ratings rely on.
