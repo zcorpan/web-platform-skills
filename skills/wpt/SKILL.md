@@ -27,6 +27,11 @@ description: Use when writing, running, or debugging web-platform-tests (wpt), o
   - `chrome-canary-mcp` (isolated profile): `new_page`, `evaluate_script`, `list_console_messages`, `take_screenshot`. Every page tool needs `pageId` (from `new_page`/`list_pages`); `evaluate_script` takes a function (`() => ...`).
   - `firefox-nightly-mcp` (temp profile): `new_page`, `evaluate_script`, `screenshot_page`, `close_firefox_session`. `evaluate_script` takes a function (`() => ...`). No console tool by default.
 
+## Cleaning up
+
+- When done testing, stop everything you started: `./wpt serve`, background `./wpt run`, WebDriver servers (geckodriver, chromedriver, safaridriver), browser instances, and MCP browser sessions/tabs. Check `ps` for leftovers.
+- If the user may want to test manually (e.g. you gave them a URL on a local server), leave it running and offer to stop it later.
+
 ## Writing tests
 
 - Await events/callbacks (wrap in a promise) rather than polling. Poll with `await t.step_wait(() => video.currentSrc == source.src, 'desc', 3000, 5)` (adjust the 100ms default as needed) only for spec steps with no observable event, e.g. an algorithm resuming at a microtask checkpoint; don't sync those on a parse-time inline script (engines don't resume there).
