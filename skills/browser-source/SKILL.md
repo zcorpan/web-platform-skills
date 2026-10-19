@@ -7,6 +7,7 @@ description: Use when finding or citing the code in Gecko, Chromium, WebKit, or 
 
 ## Finding code
 
+- Start from the spec: engines cite spec URLs in comments (Ladybird nearly always), so grep for the section's anchor. For Gecko, `searchfox-cli --spec-refs '<url>'` (see the `webspec-index` skill).
 - Prefer a local checkout and `git grep`; otherwise Searchfox (Gecko), Chromium Code Search, and GitHub (WebKit, Ladybird).
 - For several engines, run one subagent per engine in parallel. Give each the scenario and the measured result, and ask for the first check that fires, short excerpts, and pinned permalinks.
 - Read at a commit (`git show <sha>:<path>`), not the working tree; local edits and sparse checkouts shift or hide lines.
