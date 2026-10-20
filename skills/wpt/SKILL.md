@@ -1,6 +1,6 @@
 ---
 name: wpt
-description: Use when writing, running, or debugging web-platform-tests (wpt), or when measuring how browsers actually behave (event and task ordering, timing, loading) with a throwaway test or by loading a page in Firefox, Chrome, or Safari. Triggers on "wpt", "web-platform-tests", "write a test", "./wpt run", "what do browsers do", "test this in Firefox/Chrome/Safari".
+description: Use when writing, running, or debugging web-platform-tests (wpt), or when measuring how browsers actually behave (event and task ordering, timing, loading) with a throwaway test or by loading a page in Firefox, Chrome, or Safari, including before using the `firefox-nightly-mcp`, `chrome-canary-mcp`, or `safari-tp-mcp` browser tools. Triggers on "wpt", "web-platform-tests", "write a test", "./wpt run", "what do browsers do", "test this in Firefox/Chrome/Safari".
 ---
 
 # wpt
@@ -29,8 +29,11 @@ description: Use when writing, running, or debugging web-platform-tests (wpt), o
 
 ## Cleaning up
 
-- When done testing, stop everything you started: `./wpt serve`, background `./wpt run`, WebDriver servers (geckodriver, chromedriver, safaridriver), browser instances, and MCP browser sessions/tabs. Check `ps` for leftovers.
-- Closing MCP tabs doesn't quit the browser. Only `firefox-nightly-mcp` has a quit tool (`close_firefox_session`); `kill` the Chrome Canary and Safari TP (`--automation`) processes. Other sessions' browsers may be running too: kill only yours, identified by ancestry (Chrome is a child of this session's `chrome-devtools-mcp`) or by a start time (`ps -o lstart`) inside your test window (Safari TP is reparented to pid 1).
+- Before the reply that reports results, stop everything you started: `./wpt serve`, background `./wpt run`, WebDriver servers (geckodriver, chromedriver, safaridriver), and browsers. Quit each browser; closing tabs or pages leaves it running:
+  - Firefox Nightly (`firefox-nightly-mcp`): `close_firefox_session`.
+  - Chrome Canary (`chrome-canary-mcp`): `kill` the Canary main process that is a child of this session's `chrome-devtools-mcp`.
+  - Safari TP (`safari-tp-mcp`, safaridriver): `kill` the `--automation` Safari TP process started (`ps -o lstart`) inside your test window; it's reparented to pid 1.
+- Other sessions' browsers and MCP servers may be running: kill only yours. This session's MCP servers are children of the `claude` process that is an ancestor of your shell. Check `ps` for leftovers afterwards.
 - If the user may want to test manually (e.g. you gave them a URL on a local server), leave it running and offer to stop it later.
 
 ## Writing tests
