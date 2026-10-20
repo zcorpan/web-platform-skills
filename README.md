@@ -35,7 +35,7 @@ For a compat analysis with `httparchive`, a detailed prompt covers:
 - How to find affected pages: a use counter, custom metric, or string to search in
   `response_body`, with the crawl date, client, and root or all pages.
 - The before/after switch: an engine flag or pref, a build to make or use, or how to emulate it.
-- The browser that matches the change (Chrome for Blink, Firefox for Gecko).
+- The browser to test in.
 - Sample size and strata, and whether to also check all top-ranked hits.
 - The budget: a per-query or total cap.
 - What to deliver: research repo, summary, or a draft comment you review before posting.
