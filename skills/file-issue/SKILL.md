@@ -1,6 +1,6 @@
 ---
 name: file-issue
-description: Use when drafting or filing a spec issue (WHATWG, W3C, or other GitHub-hosted specs) or a browser implementation bug (Chromium, WebKit, Mozilla Bugzilla), including pre-filling the new-issue form. Triggers on "file an issue", "spec issue", "file a bug", "report this to Chromium/WebKit/Gecko", "draft an issue".
+description: Use when drafting or filing a spec issue (WHATWG, W3C, or other GitHub-hosted specs) or a browser implementation bug (Chromium, WebKit, Mozilla Bugzilla), including pre-filling the new-issue form, or writing a WHATWG spec PR's description and checklist. Triggers on "file an issue", "spec issue", "file a bug", "report this to Chromium/WebKit/Gecko", "draft an issue", "open the PR", "edit the PR".
 ---
 
 # file-issue
@@ -9,7 +9,7 @@ description: Use when drafting or filing a spec issue (WHATWG, W3C, or other Git
 
 - One issue per issue; cut tangents. If a second problem appears, file it separately instead of adding a "Related" paragraph.
 - Problem + evidence, then stop. One hedged sentence suggesting a fix is OK. Keep refs terse: "(Found in #123.)", not a clause.
-- When suggesting a fix, verify its impact carefully to avoid regressions.
+- When suggesting a fix, verify its impact carefully to avoid regressions. Prefer the fix that changes the fewest implementations; don't resolve engine disagreement with implementation-defined or optional behavior.
 - Quote the spec as a block quote (colon intro, "...and " continuation), not inline.
 - Hedge implementation claims ("appear to run", "seems to") only when inferred from test results alone. If the engine source has also been read, state it with confidence ("runs"). Report observed behavior, not code.
 - If the problem is spec-only and no browser distinguishes, omit browsers entirely. Don't report "couldn't reproduce".
@@ -21,6 +21,14 @@ description: Use when drafting or filing a spec issue (WHATWG, W3C, or other Git
 - Title: for a spec change, the behavior change; for a defect, the observable symptom, not the cause or fix.
 - Link a wpt test, or describe the repro and attach a test file.
 - On non-GitHub trackers (Chromium, WebKit, Bugzilla), use full URLs, not `org/repo#N` shorthand.
+
+## WHATWG PRs
+
+- The description opens with the commit message. Backtick code there where needed, but not in git commit messages ([COMMITTING.md](https://github.com/whatwg/meta/blob/main/COMMITTING.md)). End it with `Tests: <wpt PR URL>.`, then `Fixes #N.`
+- Implementer interest: list only Chromium, Gecko, and WebKit. An engine that already implements the behavior (its tests pass) counts as interested. Don't list other engines (e.g. Ladybird, Servo).
+- Implementation bugs: link a bug for each of those engines that fails the tests, and mark the ones that pass as already matching. Don't write "N/A" until every engine passes. If an engine is known to diverge but the tests don't show it, improve the tests first.
+- Skip the spec issue only for an obvious bug fix that implementations agree on; if they disagree, file an issue first.
+- Renaming a `<dfn>`: keep the old anchor too. Removing one: point the old anchor at a note saying what was there and why it's gone. A removal needs a test that the feature is unsupported.
 
 ## Pre-filling forms
 
