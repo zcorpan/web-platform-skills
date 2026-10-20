@@ -1,6 +1,6 @@
 # Shared by compare.py and recheck.py: launches the before/after browsers and visits a page the
 # way the HTTP Archive crawl does (desktop 1366x768; mobile 360x640, DPR 3, mobile UA, touch).
-import asyncio, difflib, functools, http.server, os, threading
+import asyncio, difflib, functools, http.server, os, re, threading
 from PIL import Image, ImageChops
 import change
 
@@ -16,6 +16,15 @@ MEASURE_JS = """
 """
 
 
+URL_QUERY = re.compile(r'(https?://[^\s?#"\'<>]+)[?#][^\s"\'<>]*')
+
+
+def scrub(s):
+    """Drop query strings and fragments from URLs: live loads put tracking IDs, client IDs and
+    location hints there, and run output gets published."""
+    return URL_QUERY.sub(r'\1', s) if isinstance(s, str) else s
+
+
 async def launch(p, executable, setup):
     args = change.BEFORE_ARGS if setup == 'before' else change.AFTER_ARGS
     return await p.chromium.launch(executable_path=executable, args=args)
@@ -23,6 +32,7 @@ async def launch(p, executable, setup):
 
 async def measure(frame):
     m = await frame.evaluate(MEASURE_JS)
+    m['url'] = scrub(m['url'])
     if change.EXTRA_MEASURE_JS:
         m['extra'] = await frame.evaluate(change.EXTRA_MEASURE_JS)
     return m
@@ -42,7 +52,7 @@ async def visit(browser, url, client, setup, shot=None, wait=3000, full_page=Tru
             await ctx.add_init_script(js)
     page = await ctx.new_page()
     errors = []
-    page.on('pageerror', lambda e: errors.append(str(e)[:300]))
+    page.on('pageerror', lambda e: errors.append(scrub(str(e))[:300]))
     rec = {}
     try:
         resp = await page.goto(url, wait_until='load', timeout=30000)
@@ -58,7 +68,7 @@ async def visit(browser, url, client, setup, shot=None, wait=3000, full_page=Tru
                 fm = await measure(fr)
                 frames.append(fm | {'text': fm['text'][:200]})
             except Exception as e:
-                frames.append({'url': fr.url, 'error': str(e)[:100]})
+                frames.append({'url': scrub(fr.url), 'error': scrub(str(e))[:100]})
         rec['frames'] = frames
         if shot:
             await page.screenshot(path=shot, full_page=full_page, scale='css', timeout=20000)
@@ -67,7 +77,7 @@ async def visit(browser, url, client, setup, shot=None, wait=3000, full_page=Tru
                 img.crop((0, 0, img.width, 4000)).save(shot)
             rec['shot'] = shot
     except Exception as e:
-        rec['error'] = str(e).splitlines()[0][:300]
+        rec['error'] = scrub(str(e).splitlines()[0])[:300]
     rec['pageErrors'] = errors[:10]
     await ctx.close()
     return rec
