@@ -16,13 +16,32 @@ MEASURE_JS = """
 """
 
 
-URL_QUERY = re.compile(r'(https?://[^\s?#"\'<>]+)[?#][^\s"\'<>]*')
+URL_QUERY = re.compile(r'([a-z][a-z0-9+.-]*://[^\s?#"\'<>]+)[?#][^\s"\'<>]*', re.I)
+CC_HOST = re.compile(r'\b(google|bing|yahoo|amazon|facebook)\.(?:co\.)?(?!com\b|net\b|org\b)[a-z]{2}\b')
+ORIGIN = re.compile(r'[a-z][a-z0-9+.-]*://[^/?#\s]*', re.I)
 
 
 def scrub(s):
-    """Drop query strings and fragments from URLs: live loads put tracking IDs, client IDs and
-    location hints there, and run output gets published."""
-    return URL_QUERY.sub(r'\1', s) if isinstance(s, str) else s
+    """Drop query strings and fragments from URLs (any scheme) and mask country-specific hosts:
+    live loads put tracking IDs, tokens and location hints there, and run output gets published."""
+    return CC_HOST.sub(r'\1.<cc>', URL_QUERY.sub(r'\1', s)) if isinstance(s, str) else s
+
+
+def scrub_record(rec):
+    """Call on each result before writing it, after the text ratios are computed: drops page text,
+    titles and final URLs (geo-targeted content and geo redirects identify the tester) and cuts
+    frame URLs to their origin."""
+    for v in [rec] + [rec.get(t) for t in ('A', 'A2', 'B')]:
+        if not isinstance(v, dict):
+            continue
+        for k in ('text', 'title', 'url'):
+            v.pop(k, None)
+        for fr in v.get('frames', []):
+            fr.pop('text', None)
+            fr.pop('title', None)
+            m = ORIGIN.match(fr.get('url') or '')
+            fr['url'] = m.group(0) if m else None
+    return rec
 
 
 async def launch(p, executable, setup):

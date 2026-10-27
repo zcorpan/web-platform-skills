@@ -64,7 +64,7 @@ async def main():
                    'pixAA2': harness.pixel_diff(a.get('shot'), a2.get('shot')),
                    'pixAB': harness.pixel_diff(a.get('shot'), b.get('shot'))}
             with open(results_path, 'a') as f:
-                f.write(json.dumps(res) + '\n')
+                f.write(json.dumps(harness.scrub_record(res)) + '\n')
             print(idx, r['stratum'], res['textRatioAB'], res['pixAB'], flush=True)
 
         await asyncio.gather(*(one(i, r) for i, r in enumerate(rows)))
