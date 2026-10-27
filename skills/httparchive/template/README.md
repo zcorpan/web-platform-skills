@@ -14,6 +14,9 @@ Proposed change: <what changes, in one or two sentences; which cases differ and 
 
 ## 1. HTTP Archive
 
+<!-- If a Common Crawl corpus was used too: crawl, seed, WARC count, HTML responses, and which
+     numbers come from it (cc.py pick/download). Its pages aren't only root pages. -->
+
 <!-- Crawl date, table, clients, root and/or non-root pages. Each query file, what it selects
      (use counters with where they're incremented, or custom metric fields with a link to the
      metric's source at a commit), and its output file. -->
