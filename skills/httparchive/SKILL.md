@@ -76,5 +76,10 @@ description: Use when measuring how the web uses a feature, or estimating the we
 ## Reporting findings
 
 - To report on the spec issue or bug, draft a comment in chat and post it only when asked. Open with a short paragraph in the user's voice: what was checked and the verdict, with the headline number. Follow with `AI summary of the research ([<owner>/<repo>](<repo URL>)):` and the summary as one block quote, every line starting with `>` (a bare `>` for blank lines between paragraphs and lists).
-- In the summary: the setup (builds or emulation, and how it was sanity-checked against real browsers), the denominator (crawl date, client, pages with the counter or condition), the sample design, the result per comparison with the extrapolated counts and intervals, each affected page with its mechanism, effects that aren't visible, and what isn't covered. Take every number from the committed files.
+- Keep the summary short (aim for under ~250 words); the README holds the rest. It has four parts:
+  - Method, in two or three sentences: the setup (builds or emulation, and its sanity check against real browsers), the denominator (crawl date, client, pages with the counter or condition), and the samples.
+  - Results as one small table: one row per comparison, extrapolated counts per verdict (intervals only where they carry the conclusion).
+  - Affected pages, one line each: site, what changes for users, and a link to the review image. Only pages rated worse, improved, or with a user-facing change.
+  - A closing link to the README for details.
+- Leave out per-sample and per-stratum breakdowns, "not covered" lists, lists of why pages were unaffected, neutral cases that don't bear on the verdict, and process details (how the review was split up, what was rechecked). Take every number from the committed files.
 - Link each affected page's evidence to its committed review image (`https://github.com/<owner>/<repo>/blob/main/<path>`) rather than to the live site, which changes and sends readers to an arbitrary site, and say once which side of a crop or panel is which. Name the site in plain text.
