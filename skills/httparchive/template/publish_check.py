@@ -5,8 +5,8 @@
 #   .publish-terms (gitignored), plus any EXTRA_TERM. --crawl: files of crawl data whose URLs are
 #   allowed anywhere (default queries/**/*.csv).
 # Exits 1 and lists matches if anything is found. Fix it in history (not just HEAD) before pushing.
-# Images aren't scanned; review committed screenshots by eye.
-import glob, os, re, subprocess, sys
+# With --staged, staged images are OCRed with ocr_check.py (other images aren't scanned).
+import glob, os, re, subprocess, sys, tempfile
 
 
 def run(*args):
@@ -43,13 +43,15 @@ if '--staged' in sys.argv:
 else:
     blobs = [(commit[:8], path, meta.split()[2]) for commit in run('git', 'rev-list', '--all').split()
              for meta, path in (l.split('\t', 1) for l in run('git', 'ls-tree', '-r', commit).splitlines())]
-seen, found = set(), 0
+seen, found, images = set(), 0, []
 for label, path, sha in blobs:
     if sha in seen or path in crawl_files:
         continue
     seen.add(sha)
     blob = subprocess.run(['git', 'cat-file', 'blob', sha], capture_output=True).stdout
     if b'\0' in blob[:8000]:
+        if path.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+            images.append((path, blob))
         continue
     text = blob.decode('utf8', 'replace')
     for name, pat in patterns.items():
@@ -57,6 +59,20 @@ for label, path, sha in blobs:
         if hits:
             found += 1
             print(f'{label} {path}: {name} ({len(hits)}): {hits[0][:80]!r}')
+if '--staged' in sys.argv and images:
+    import ocr_check
+    if not ocr_check.backend():
+        print('no OCR backend for staged images: pip install pyobjc-framework-Vision (macOS) or install tesseract')
+        found += 1
+    else:
+        with tempfile.TemporaryDirectory() as tmp:
+            files = {}
+            for i, (path, blob) in enumerate(images):
+                files[os.path.join(tmp, f'{i}{os.path.splitext(path)[1]}')] = path
+                open(list(files)[-1], 'wb').write(blob)
+            for f, x, y, line in ocr_check.check(list(files)):
+                print(f'staged {files[f]}: OCR text (tile at x {x:.2f}, y {y:.2f}): {line[:80]!r}')
+                found += 1
 if not os.path.exists('.publish-terms'):
     print('no .publish-terms: add the tester\'s public IP, city, region, country name and demonym')
     found += 1
