@@ -38,7 +38,7 @@ before spending money on HTTP Archive.
 ## How a research run goes
 
 1. You describe the change and, if you know, how to find affected pages: a use counter, or a
-   pattern in markup, CSS or scripts. See [Prompting](../README.md#prompting).
+   pattern in markup, CSS or scripts (see Prompting below).
 2. Claude finds candidate pages: by use counter in HTTP Archive, or for patterns by scanning
    Common Crawl first and then running one HTTP Archive query for counts and popularity ranks.
 3. Before any billed query, Claude does a dry run, shows you how much data it would read, and waits
@@ -55,6 +55,26 @@ before spending money on HTTP Archive.
    location, which live pages can show) gets committed.
 8. Claude drafts a comment for the spec issue or bug. When you're happy with it, it gives you the
    commands to create the GitHub repo and post the comment, and you run them.
+
+## Prompting
+
+Both styles work: a detailed prompt up front, or a short one that you steer as it goes. Claude
+asks before anything billed or outward-facing (BigQuery queries, pushes, posts).
+
+A detailed prompt covers:
+
+- The change, precisely: what behaves differently and which cases are affected.
+- How to find affected pages: a use counter, custom metric, or string to search in
+  `response_body`, with the crawl date, client, and root or all pages.
+- The before/after switch: an engine flag or pref, a build to make or use, or how to emulate it.
+- The browser to test in.
+- Sample size and strata, and whether to also check all top-ranked hits.
+- The budget: a per-query or total cap.
+- What to deliver: research repo, summary, or a draft comment you review before posting.
+
+A short prompt like "run httparchive analysis for &lt;issue>; there's no use counter, search
+`response_body` for X" also works; expect to answer questions and correct course (scope, budget,
+which browser) along the way.
 
 ## Examples
 
