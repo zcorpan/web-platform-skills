@@ -96,11 +96,13 @@ Research made with the skill:
 - Claude Code with this plugin (see [Install](../README.md#install)).
 - For HTTP Archive: a Google Cloud project with billing enabled, and the
   [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (`gcloud auth login`; it includes
-  `bq`). BigQuery bills by data read, not rows returned
+  `bq`). BigQuery bills by data read, not rows returned: on demand, $6.25 per TiB at the time of
+  writing, with the first TiB each month free
   ([pricing](https://cloud.google.com/bigquery/pricing)). Use counters for all root pages in one
-  crawl are around 100 GB; searching every response body in one crawl is around 200 TB, which is
-  why the skill tries searches on Common Crawl and HTTP Archive's 10k-page sample tables first.
-  Tell Claude your budget; it caps every query.
+  crawl are about 0.1 TiB (under $1); searching every response body in one crawl is about 200 TiB
+  (over $1,000), which is why the skill tries searches on Common Crawl and HTTP Archive's 10k-page
+  sample tables first. Tell Claude your budget; it caps every query and shows the size and cost
+  before running it.
 - Python 3. Claude sets up a virtual environment for the scripts.
 - The browsers to test in, such as Chrome Canary or Firefox Nightly, or your own engine build with
   the change.

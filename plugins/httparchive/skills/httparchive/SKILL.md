@@ -15,8 +15,9 @@ description: Use when measuring how the web uses a feature, or estimating the we
 ## Cost
 
 - Queries bill the user's Google Cloud project. Before the first query that isn't a dry run, show the dry-run estimate and wait for explicit approval, even if the user asked for HTTP Archive data and especially if this skill loaded on its own. Ask again for any query above a budget or per-query cap the user approved.
+- Give every estimate in TiB with its on-demand cost at $6.25 per TiB (e.g. "0.104 TiB, about $0.65").
 - Dry-run every query (`--dry_run`) and always pass `--maximum_bytes_billed`.
-- Cost depends on the columns read, not the rows returned: `LIMIT` doesn't reduce it, `TABLESAMPLE SYSTEM (n PERCENT)` does. Reading one `custom_metrics` sub-field over all root pages costs far less than reading `payload` or the `requests` table (~200 TB per crawl date in 2026).
+- Cost depends on the columns read, not the rows returned: `LIMIT` doesn't reduce it, `TABLESAMPLE SYSTEM (n PERCENT)` does. Reading one `custom_metrics` sub-field over all root pages costs far less than reading `payload` or the `requests` table (~200 TiB per crawl date in 2026).
 - The dry-run number is an upper bound, and `--maximum_bytes_billed` is checked against it before the query starts. `TABLESAMPLE` and filters on later clustering columns (`type`, `rank`) don't lower it, so a sampled or filtered query is rejected unless the cap covers the full estimate; a `client` filter does lower it. A `type` filter didn't lower bytes billed for `response_body` either.
 - Prototype on a sample, then run the full query once. 1% is fine for small columns. For `response_body`, prototype on `httparchive.sample_data.requests_10k` (also `pages_10k`, `parsed_css_10k`: ~10k root pages per client, recent crawls); a sampled `crawl.requests` query needs a cap at or above the full estimate, which then doesn't protect anything, so get approval for that cap.
 - Get actual cost from job stats (`bq ls -j --format=json`, `statistics.query.totalBytesBilled`). `-a` includes other users' jobs, so filter on `user_email`.
