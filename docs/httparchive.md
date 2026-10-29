@@ -56,6 +56,30 @@ before spending money on HTTP Archive.
 8. Claude drafts a comment for the spec issue or bug. When you're happy with it, it gives you the
    commands to create the GitHub repo and post the comment, and you run them.
 
+## Examples
+
+Research made with the skill: the question, the research repo, and the comment that reported it.
+
+- [document-shadowing-compat-10687](https://github.com/zcorpan/document-shadowing-compat-10687):
+  can `<form name=createElement>` and similar stop shadowing `document`'s methods and other
+  inherited properties, not just its attributes? Found pages via a Chrome use counter, then
+  compared Firefox Nightly with its pref off and on. ([comment](https://github.com/whatwg/html/issues/10687#issuecomment-6492266222))
+- [noscript-compat-10879](https://github.com/zcorpan/noscript-compat-10879): can the HTML parser
+  treat `<noscript>` the same in every document, based only on whether JavaScript is enabled?
+  Chrome use counters, random and top-ranked samples, and a patched Firefox build that switches
+  between the behaviors. ([comment](https://github.com/whatwg/html/issues/10879#issuecomment-6440928253))
+- [foreign-rawtext-compat-11397](https://github.com/zcorpan/foreign-rawtext-compat-11397): can
+  `style`, `script`, `title` and similar parse the same inside SVG/MathML as in HTML, to prevent a
+  class of XSS? Compared several parser variants, using a patched html5lib and a Firefox build. ([comment](https://github.com/whatwg/html/issues/11397#issuecomment-6454458598))
+- [xslt-compat-11523](https://github.com/zcorpan/xslt-compat-11523): what breaks if browsers remove
+  XSLT? Use counters, plus Chrome with XSLT on and off. ([comment](https://github.com/whatwg/html/issues/11523#issuecomment-6263966715))
+- [sizes-compat-3981](https://github.com/zcorpan/sizes-compat-3981): what changes if an image's
+  natural width comes from `sizes` instead of the `srcset` `w` descriptor? Started from an HTTP
+  Archive custom metric, then emulated the new rule in Chrome. ([comment](https://github.com/whatwg/html/issues/3981#issuecomment-6055848216))
+- [mozgetall-compat-1577227](https://github.com/zcorpan/mozgetall-compat-1577227): can Firefox
+  remove the nonstandard IndexedDB `mozGetAll`? Searched response bodies for the name, separated
+  real code from minifiers' name lists, and tested a Firefox build with it removed. ([comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1577227#c11))
+
 ## What you need
 
 - Claude Code with this plugin (see [Install](../README.md#install)).
