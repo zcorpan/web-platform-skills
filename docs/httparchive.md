@@ -64,16 +64,17 @@ asks before anything billed or outward-facing (BigQuery queries, pushes, posts).
 A detailed prompt covers:
 
 - The change, precisely: what behaves differently and which cases are affected.
-- How to find affected pages: a use counter, custom metric, or string to search in
-  `response_body`, with the crawl date, client, and root or all pages.
-- The before/after switch: an engine flag or pref, a build to make or use, or how to emulate it.
-- The browser to test in.
-- Sample size and strata, and whether to also check all top-ranked hits.
+- How to find affected pages: a use counter, a custom metric, or a pattern to search for in
+  markup, CSS or scripts.
+- How to turn the change on and off, and in which browser: a flag or pref, a build to make or use,
+  or how to emulate it.
 - The budget: a per-query or total cap.
-- What to deliver: research repo, summary, or a draft comment you review before posting.
+
+Claude picks defaults for the rest (crawl date, desktop or mobile, sample size); mention them only
+if you have a preference.
 
 A short prompt like "run httparchive analysis for &lt;issue>; there's no use counter, search
-`response_body` for X" also works; expect to answer questions and correct course (scope, budget,
+response bodies for X" also works; expect to answer questions and correct course (scope, budget,
 which browser) along the way.
 
 ## Examples
