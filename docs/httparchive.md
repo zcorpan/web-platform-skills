@@ -15,13 +15,13 @@ each site a coarse popularity rank: top 1k, 10k, 100k, 1M, and so on. Intranets,
 pages, Chrome on iOS, and other Chromium browsers aren't in it.
 
 **HTTP Archive.** Each month, [HTTP Archive](https://httparchive.org/) takes the CrUX site list
-(about 16 million sites in 2025) and loads each site's home page (the "root page") and one additional
-page linked from it in Chrome: once as desktop, once as emulated mobile. It loads them from US
-datacenters, logged out, with an empty cache, and doesn't click or type anything. For each page it
-stores the responses (HTML, scripts, CSS), which Chrome use counters fired, the output of custom
-metrics (scripts run on the page after load), and more. It's all in a public BigQuery dataset;
-see [har.fyi](https://har.fyi/) and the Web Almanac's
-[methodology](https://almanac.httparchive.org/en/2025/methodology).
+(in the 2026-10-01 crawl, 15.4 million sites on mobile and 11.7 million on desktop) and loads each
+site's home page (the "root page") and one additional page linked from it in Chrome: once as
+desktop, once as emulated mobile. It loads them from US datacenters, logged out, with an empty
+cache, and doesn't click or type anything. For each page it stores the responses (HTML, scripts,
+CSS), which Chrome use counters fired, the output of custom metrics (scripts run on the page after
+load), and more. It's all in a public BigQuery dataset; see [har.fyi](https://har.fyi/) and the
+Web Almanac's [methodology](https://almanac.httparchive.org/en/2025/methodology).
 
 **Use counters.** Browsers count how often features are used. A use counter is a line of engine
 code that fires when a code path runs; Chrome publishes each counter's rate as "% of page loads" on
