@@ -112,7 +112,8 @@ Research made with the skill:
 
 - The crawl is mostly home pages. Deep links, feeds, logged-in apps, and intranets are missing or
   underrepresented. Chrome's field rates include them, so a field rate much higher than the crawl's
-  means the crawl undercounts.
+  may mean the crawl undercounts, or that the feature is on a few heavily used pages (field rates
+  count page loads, not pages).
 - Pages are only loaded. Breakage that needs clicks, typing, or form submission isn't seen unless
   you ask for it to be tested.
 - Live pages change after they're crawled, and they can differ by country.
