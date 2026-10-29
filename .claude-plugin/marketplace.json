@@ -9,6 +9,11 @@
       "name": "web-platform-skills",
       "source": "./",
       "description": "Skills for web platform spec and wpt work"
+    },
+    {
+      "name": "httparchive",
+      "source": "./plugins/httparchive",
+      "description": "Estimate web compat impact with HTTP Archive and Common Crawl"
     }
   ]
 }

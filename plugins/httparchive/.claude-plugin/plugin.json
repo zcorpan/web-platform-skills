@@ -1,0 +1,9 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "httparchive",
+  "version": "0.1.0",
+  "description": "Estimate web compat impact with HTTP Archive and Common Crawl",
+  "author": {
+    "name": "Simon Pieters"
+  }
+}
