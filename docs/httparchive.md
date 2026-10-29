@@ -74,8 +74,9 @@ Claude picks defaults for the rest (crawl date, desktop or mobile, sample size);
 if you have a preference.
 
 A short prompt like "run httparchive analysis for &lt;issue>; there's no use counter, search
-response bodies for X" also works; expect to answer questions and correct course (scope, budget,
-which browser) along the way.
+response bodies for X" also works. Claude works out the rest from the issue and keeps going until it
+needs you, such as to approve the first billed query or to provide a browser build. Correct course
+along the way if its choices don't match what you want.
 
 ## Examples
 
