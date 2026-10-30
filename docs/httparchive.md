@@ -105,7 +105,8 @@ Research made with the skill:
   before running it.
 - Python 3. Claude sets up a virtual environment for the scripts.
 - The browsers to test in, such as Chrome Canary or Firefox Nightly, or your own engine build with
-  the change.
+  the change. The scripts drive them with Playwright (Chromium) or Selenium (Firefox), installed in
+  the virtual environment; no browser MCP server is needed.
 - Optionally, disk space for Common Crawl WARCs (about 1 GB each).
 
 ## Limits
