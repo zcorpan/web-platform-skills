@@ -32,6 +32,7 @@ async def sanity(before, after):
                 await ctx.add_init_script(js)
         pg = await ctx.new_page()
         await pg.goto(url)
+        await pg.wait_for_timeout(3000)  # like visits; polyfills and extensions may act after load
         if setup == 'after' and change.AFTER_LOAD_JS:
             await pg.evaluate(change.AFTER_LOAD_JS)
         ok = bool(await pg.evaluate(change.SANITY_JS)) == (setup == 'after')

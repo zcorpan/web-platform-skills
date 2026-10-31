@@ -1,6 +1,6 @@
 ---
 name: httparchive
-description: Use when measuring how the web uses a feature, or estimating the web compat impact of a spec or browser change, with HTTP Archive data in BigQuery or Common Crawl WARCs, including checking crawl-based estimates by loading sampled pages in a browser. Triggers on "HTTP Archive", "httparchive", "Common Crawl", "research compat impact", "research how many pages use", "research whether this is web compatible". Queries are billed; get the user's confirmation before running any query that isn't a dry run.
+description: Use when measuring how the web uses a feature, or estimating the web compat impact of a spec or browser change, with HTTP Archive data in BigQuery or Common Crawl WARCs, including checking crawl-based estimates by loading sampled pages in a browser, or loading the pages that use a feature in a second implementation (a polyfill or extension, a flag or pref, another browser or build) against a reference to find its compat bugs. Triggers on "HTTP Archive", "httparchive", "Common Crawl", "research compat impact", "research how many pages use", "research whether this is web compatible". Queries are billed; get the user's confirmation before running any query that isn't a dry run.
 ---
 
 # httparchive
@@ -79,6 +79,17 @@ description: Use when measuring how the web uses a feature, or estimating the we
   - Watch for content that's hidden from rendering but still live DOM (ids, labels, form controls, default buttons, stylesheets, fetches), APIs that expose the same result through several getters (XHR `response` and `responseXML`), code that uses APIs from another realm the preload script doesn't reach, and stack frames that lose their line numbers when URL queries are scrubbed (extract positions first).
 - If the sample has few or no top-ranked pages (`rank`), run every top-ranked hit through the same steps and report them separately.
 - For batch runs, use Playwright in a venv with a few pages in parallel; append one JSON line per page and skip pages already done, so the run can resume. Wrap each page visit in an overall timeout (e.g. `asyncio.wait_for`) and record a timeout as an error: `page.evaluate` and `context.close` have no timeout of their own, so one hung page holds a slot forever and stalls the run.
+
+## Finding bugs in an implementation
+
+- The same live comparison can test one implementation against a reference: a polyfill or extension against native, a flag or pref flipped, a new build against release, or one browser against another. A and A2 run the reference and B runs the candidate. The output is bugs to file, not an estimate, so there's nothing to extrapolate.
+- Use every page known to exercise the feature (e.g. an earlier compat run's sample and its top-ranked and follow-up pages), not only those rated affected: a polyfill changes feature detection, so pages that looked unaffected take new code paths.
+- Have the sanity check confirm that each side runs the implementation it should (e.g. that the global is native in A and the polyfill's in B), not only that the feature works.
+- In Chromium, set `AFTER_EXTENSION` in `change.py`; the harness gives each visit a fresh profile and loads the extension through CDP. In Firefox, install it per session with geckodriver (`install_addon(path, temporary=True)`), with the pref in the session's options.
+- Flag console errors and warnings only B logs, not only exceptions: polyfills often log failures instead of throwing. Ignore the setups' by-design messages (`IGNORE_MESSAGES`). Also flag states only the candidate has (a loading indicator still up, raw content where A rendered).
+- Before blaming the candidate, check that the page didn't fail on its own: reload it in both setups and look at the responses (server errors, rate limiting, bot blocks). When comparing browsers, or a polyfill that targets several, check what each engine actually does; the reference can differ between them.
+- Reduce each cause to a minimal local test page, run it in every browser in both setups, and commit the pages, the runner, and its output. Link the responsible code, and the engine or spec code that defines the expected behavior, at a commit.
+- Search the tracker for existing reports first. File one issue per cause, with a tag shared by every title (e.g. the research repo's name). Each issue gives what's wrong, the test case, a few affected pages with review images, and a hedged fix suggestion. Draft them and file only when asked. In the README, give the method, counts flagged per browser, and searches for the tag, not the bug list.
 
 ## Research repo
 

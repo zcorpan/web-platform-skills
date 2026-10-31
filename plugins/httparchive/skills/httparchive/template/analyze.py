@@ -2,7 +2,7 @@
 # rest to <out-dir>/review/<idx>.png. Creates <out-dir>/review.csv, prefilled with the auto ratings,
 # if it doesn't exist; fill in the empty ratings there by hand. Rerunning never overwrites it.
 # Usage: analyze.py <out-dir>
-import csv, json, os, sys
+import csv, json, os, re, sys
 from PIL import Image
 import change
 
@@ -19,14 +19,23 @@ def auto(r):
     rated = change.classify(r)
     if rated:
         return rated
+    if new_errors(r):
+        return '', 'errors only in B; needs review'
     if r['textRatioAB'] >= min(r['textRatioAA2'], 0.98) and (r['pixAB'] or 0) <= max((r['pixAA2'] or 0) * 1.5, 0.01):
         return 'no visible change', 'A vs B within A vs A2 noise'
     return '', 'differs; needs review'
 
 
+def messages(v):
+    # Numbers vary between loads (timestamps, IDs, line numbers in minified code).
+    ignore = re.compile(change.IGNORE_MESSAGES) if change.IGNORE_MESSAGES else None
+    return {re.sub(r'\d+', 'N', e)[:150]: e for e in v.get('pageErrors', []) + v.get('console', [])
+            if not (ignore and ignore.search(e))}
+
+
 def new_errors(r):
-    before = set(r['A'].get('pageErrors', []) + r['A2'].get('pageErrors', []))
-    return ' | '.join(e[:100] for e in r['B'].get('pageErrors', []) if e not in before)[:300]
+    before = messages(r['A']).keys() | messages(r['A2']).keys()
+    return ' | '.join(e[:100] for k, e in messages(r['B']).items() if k not in before)[:300]
 
 
 os.makedirs(f'{out_dir}/review', exist_ok=True)

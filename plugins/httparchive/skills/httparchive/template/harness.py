@@ -1,6 +1,6 @@
 # Shared by compare.py and recheck.py: launches the before/after browsers and visits a page the
 # way the HTTP Archive crawl does (desktop 1366x768; mobile 360x640, DPR 3, mobile UA, touch).
-import asyncio, difflib, functools, http.server, os, re, threading
+import asyncio, difflib, functools, http.server, os, re, shutil, socket, tempfile, threading
 from PIL import Image, ImageChops
 import change
 
@@ -44,9 +44,43 @@ def scrub_record(rec):
     return rec
 
 
+class ExtensionBrowser:
+    """Stands in for a Browser when a setup loads an extension: each new_context() launches a fresh
+    persistent profile (extensions don't run in Playwright's default contexts) and loads the
+    extension through CDP, since branded Chrome ignores --load-extension."""
+
+    def __init__(self, p, executable, args, extension, version):
+        self.p, self.executable, self.args, self.version = p, executable, args, version
+        self.extension = os.path.abspath(extension)
+        self.dirs = []
+
+    async def new_context(self, **kwargs):
+        s = socket.socket()
+        s.bind(('127.0.0.1', 0))
+        port = s.getsockname()[1]
+        s.close()
+        self.dirs.append(tempfile.mkdtemp(prefix='ext-profile-'))
+        ctx = await self.p.chromium.launch_persistent_context(
+            self.dirs[-1], executable_path=self.executable, ignore_default_args=['--disable-extensions'],
+            args=self.args + ['--enable-unsafe-extension-debugging', f'--remote-debugging-port={port}'], **kwargs)
+        cdp = await self.p.chromium.connect_over_cdp(f'http://127.0.0.1:{port}')
+        await (await cdp.new_browser_cdp_session()).send('Extensions.loadUnpacked', {'path': self.extension})
+        return ctx
+
+    async def close(self):
+        for d in self.dirs:
+            shutil.rmtree(d, ignore_errors=True)
+
+
 async def launch(p, executable, setup):
     args = change.BEFORE_ARGS if setup == 'before' else change.AFTER_ARGS
-    return await p.chromium.launch(executable_path=executable, args=args)
+    extension = change.BEFORE_EXTENSION if setup == 'before' else change.AFTER_EXTENSION
+    browser = await p.chromium.launch(executable_path=executable, args=args)
+    if not extension:
+        return browser
+    version = browser.version
+    await browser.close()
+    return ExtensionBrowser(p, executable, args, extension, version)
 
 
 async def measure(frame):
@@ -70,8 +104,10 @@ async def visit(browser, url, client, setup, shot=None, wait=3000, full_page=Tru
         if js:
             await ctx.add_init_script(js)
     page = await ctx.new_page()
-    errors = []
+    errors, console = [], []
     page.on('pageerror', lambda e: errors.append(scrub(str(e))[:300]))
+    page.on('console', lambda m: m.type in ('error', 'warning') and len(console) < 20 and
+            console.append(f'{m.type}: ' + scrub(m.text)[:300]))
     rec = {}
     try:
         resp = await page.goto(url, wait_until='load', timeout=30000)
@@ -98,6 +134,7 @@ async def visit(browser, url, client, setup, shot=None, wait=3000, full_page=Tru
     except Exception as e:
         rec['error'] = scrub(str(e).splitlines()[0])[:300]
     rec['pageErrors'] = errors[:10]
+    rec['console'] = console
     await ctx.close()
     return rec
 

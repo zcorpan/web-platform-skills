@@ -56,6 +56,14 @@ before spending money on HTTP Archive.
 8. Claude drafts a comment for the spec issue or bug. When you're happy with it, it gives you the
    commands to create the GitHub repo and post the comment, and you run them.
 
+## Finding bugs in an implementation
+
+The same setup can test an implementation instead of a change: a polyfill or browser extension
+against native support, a flag or pref, a new build, or one browser against another. Claude loads
+the pages that use the feature (often the pages from an earlier compat run) with the reference and
+with the candidate, flags differences and errors only the candidate shows, reduces each cause to a
+minimal test page, and drafts one issue per cause for the candidate's tracker.
+
 ## Prompting
 
 Both styles work: a detailed prompt up front, or a short one that you steer as it goes. Claude
@@ -88,6 +96,7 @@ Research made with the skill:
 | Can the HTML parser treat `<noscript>` the same in every document, based only on whether JavaScript is enabled? | Chrome use counters, random and top-ranked samples, and a patched Firefox build that switches between the behaviors.<br>[Repo](https://github.com/zcorpan/noscript-compat-10879), [comment](https://github.com/whatwg/html/issues/10879#issuecomment-6440928253). |
 | Can `style`, `script`, `title` and similar parse the same inside SVG/MathML as in HTML, to prevent a class of XSS? | Compared several parser variants, using a patched html5lib and a Firefox build.<br>[Repo](https://github.com/zcorpan/foreign-rawtext-compat-11397), [comment](https://github.com/whatwg/html/issues/11397#issuecomment-6454458598). |
 | What breaks if browsers remove XSLT? | Use counters, plus Chrome with XSLT on and off.<br>[Repo](https://github.com/zcorpan/xslt-compat-11523), [comment](https://github.com/whatwg/html/issues/11523#issuecomment-6263966715). |
+| Do the XSLT polyfill extensions render those pages like native XSLT? | Ran the same pages in Chrome and Firefox with native XSLT, and with it off and the extension installed; filed the polyfill and extension bugs found.<br>[Repo](https://github.com/zcorpan/xslt-compat-11523#5-xslt-polyfill-extensions), [comment](https://github.com/whatwg/html/issues/11523#issuecomment-6540232318). |
 | What changes if an image chosen by `srcset` `w` descriptors always gets `sizes` as its natural width, even when `w` doesn't match the file's real width? | Started from an HTTP Archive custom metric, then emulated the new rule in Chrome.<br>[Repo](https://github.com/zcorpan/sizes-compat-3981), [comment](https://github.com/whatwg/html/issues/3981#issuecomment-6055848216). |
 | Can Firefox remove the nonstandard IndexedDB `mozGetAll`? | Searched response bodies for the name, separated real code from minifiers' name lists, and tested a Firefox build with it removed.<br>[Repo](https://github.com/zcorpan/mozgetall-compat-1577227), [comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1577227#c11). |
 
