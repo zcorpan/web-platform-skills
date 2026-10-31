@@ -7,7 +7,7 @@ Claude Code plugins for web platform spec and wpt work. Install either or both.
 - `wpt` skill: writing, running, and debugging web-platform-tests, and measuring browser behavior.
 - `file-issue` skill: drafting spec issues and browser bugs, pre-filling Gecko/Chromium/WebKit/GitHub forms, and filling out WHATWG PR checklists.
 - `browser-source` skill: finding and citing Gecko, Chromium, WebKit, and Ladybird code, with pinned permalinks, and checking engine behavior against the spec.
-- `PreToolUse` hook: blocks `./wpt run ... firefox` on macOS while a Firefox update is staged, since the updater would hang on a password prompt.
+- `PreToolUse` hook: blocks launching Firefox through WebDriver (`./wpt run ... firefox`, geckodriver, or a Python script using Selenium) on macOS while a Firefox update is staged, since the updater would hang on a password prompt.
 
 `httparchive`:
 
