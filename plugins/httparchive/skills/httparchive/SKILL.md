@@ -79,7 +79,7 @@ description: Use when measuring how the web uses a feature, or estimating the we
 ## Finding bugs in an implementation
 
 - The same live comparison tests one implementation against a reference: a polyfill or extension vs native, a flag or pref flipped, a new build vs release, one browser vs another. A and A2 run the reference, B the candidate. The output is bugs to file, not an estimate; nothing to extrapolate.
-- Use every page known to exercise the feature (e.g. an earlier compat run's sample, top-ranked and follow-up pages), not only those rated affected: a polyfill changes feature detection, so unaffected-looking pages take new code paths.
+- If the feature is common enough that top-ranked pages alone give a usable sample, sample those, so the most-visited sites are well covered; add a long-tail sample if the long tail seems to use it differently. Otherwise use every page known to exercise it (e.g. an earlier compat run's sample, top-ranked and follow-up pages). Either way, include pages not rated affected: a polyfill changes feature detection, so unaffected-looking pages take new code paths.
 - Have the sanity check confirm each side runs the intended implementation (e.g. the global is native in A and the polyfill's in B), not only that the feature works.
 - In Chromium, set `AFTER_EXTENSION` in `change.py`. In Firefox, install it per session with geckodriver (`install_addon(path, temporary=True)`), the pref in the session's options.
 - Flag console errors and warnings only B logs, not just exceptions: polyfills often log failures instead of throwing. Ignore the setups' by-design messages. Also flag states only the candidate has (a loading indicator still up, raw content where A rendered).
