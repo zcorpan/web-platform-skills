@@ -1,9 +1,10 @@
 # Web compat research with the `httparchive` skill
 
-The `httparchive` skill helps Claude answer "is this spec or browser change web compatible?" It
-finds pages the change would affect in public crawl data, loads a sample of them in a real browser
-with and without the change, reviews the differences, and writes it all up in a reproducible git
-repo you can publish.
+The `httparchive` skill helps Claude answer "how many pages use this?", "is this spec or browser
+change web compatible?", and "does this polyfill or build match the reference?" It finds the pages
+in public crawl data (Common Crawl for free, HTTP Archive's billed BigQuery tables for counts and
+popularity), loads a sample in a real browser in each setup, reviews the differences, and writes it
+all up in a reproducible git repo you can publish.
 
 ## Where the data comes from
 
