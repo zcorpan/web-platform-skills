@@ -61,8 +61,9 @@ before spending money on HTTP Archive.
 The same setup can test an implementation instead of a change: a polyfill or browser extension
 against native support, a flag or pref, a new build, or one browser against another. Claude loads
 the pages that use the feature (often the pages from an earlier compat run) with the reference and
-with the candidate, flags differences and errors only the candidate shows, reduces each cause to a
-minimal test page, and drafts one issue per cause for the candidate's tracker.
+with the candidate, flags differences and errors only the candidate shows, checks whether each one
+is the candidate's or the browser's, reduces each cause to a minimal test page, counts the pages it
+affects, and drafts one issue per cause for the candidate's or browser's tracker.
 
 ## Prompting
 
