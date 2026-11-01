@@ -41,11 +41,12 @@ before spending money on HTTP Archive.
    pattern in markup, CSS or scripts (see Prompting below).
 2. Claude finds candidate pages: by use counter in HTTP Archive, or for patterns by scanning
    Common Crawl first and then running one HTTP Archive query for counts and popularity ranks.
-3. Before any billed query, Claude does a dry run, shows you how much data it would read, and waits
-   for your OK.
+3. Before the first billed query, and any over your budget, Claude does a dry run, shows you how
+   much data it would read, and waits for your OK.
 4. It loads the pages live: today's behavior twice (to see what changes on its own, like ads and
    carousels) and with the change once. The change comes from a browser flag or pref, a build you
-   provide, or by rewriting the page. It records JS errors, layout, and full-page screenshots.
+   provide, or by rewriting the page. It records JS errors, console messages, layout, and
+   full-page screenshots.
 5. Pages that differ are reviewed by eye and rated broken, worse, no visible change, improved, and
    so on. If the change only alters what scripts see, it can also trace what scripts do with the
    changed results.
@@ -61,9 +62,11 @@ before spending money on HTTP Archive.
 The same setup can test an implementation instead of a change: a polyfill or browser extension
 against native support, a flag or pref, a new build, or one browser against another. Claude loads
 the pages that use the feature (often the pages from an earlier compat run) with the reference and
-with the candidate, flags differences and errors only the candidate shows, checks whether each one
-is the candidate's or the browser's, reduces each cause to a minimal test page, counts the pages it
-affects, and drafts one issue per cause for the candidate's or browser's tracker.
+with the candidate, flags differences and errors only the candidate shows, and checks whether each
+one is the candidate's or the browser's. It also writes test pages for differences it finds in the
+candidate's code that the pages may miss. It reduces each cause to a minimal test page, counts the
+pages it affects, tries fixes before suggesting them, and drafts one issue per cause for the
+candidate's or browser's tracker.
 
 ## Prompting
 
@@ -96,8 +99,8 @@ Research made with the skill:
 | Can `<form name=createElement>` and similar stop shadowing `document`'s methods and other inherited properties, not just its attributes? | Found pages via a Chrome use counter, then compared Firefox Nightly with its pref off and on.<br>[Repo](https://github.com/zcorpan/document-shadowing-compat-10687), [comment](https://github.com/whatwg/html/issues/10687#issuecomment-6492266222). |
 | Can the HTML parser treat `<noscript>` the same in every document, based only on whether JavaScript is enabled? | Chrome use counters, random and top-ranked samples, and a patched Firefox build that switches between the behaviors.<br>[Repo](https://github.com/zcorpan/noscript-compat-10879), [comment](https://github.com/whatwg/html/issues/10879#issuecomment-6440928253). |
 | Can `style`, `script`, `title` and similar parse the same inside SVG/MathML as in HTML, to prevent a class of XSS? | Compared several parser variants, using a patched html5lib and a Firefox build.<br>[Repo](https://github.com/zcorpan/foreign-rawtext-compat-11397), [comment](https://github.com/whatwg/html/issues/11397#issuecomment-6454458598). |
-| What breaks if browsers remove XSLT? | Use counters, plus Chrome with XSLT on and off.<br>[Repo](https://github.com/zcorpan/xslt-compat-11523), [comment](https://github.com/whatwg/html/issues/11523#issuecomment-6263966715). |
-| Do the XSLT polyfill extensions render those pages like native XSLT? | Ran the same pages in Chrome and Firefox with native XSLT, and with it off and the extension installed; filed the polyfill and extension bugs found.<br>[Repo](https://github.com/zcorpan/xslt-compat-11523#5-xslt-polyfill-extensions), [comment](https://github.com/whatwg/html/issues/11523#issuecomment-6540232318). |
+| What breaks if browsers remove XSLT? | Use counters, plus Chrome Canary with XSLT on and off.<br>[Repo](https://github.com/zcorpan/xslt-compat-11523), [comment](https://github.com/whatwg/html/issues/11523#issuecomment-6263966715). |
+| Do the XSLT polyfill extensions render those pages like native XSLT? | Ran the same pages in Chrome Canary and Firefox Nightly with native XSLT, and with it off and the extension installed; filed the bugs found in the polyfill, the extension, and Firefox.<br>[Repo](https://github.com/zcorpan/xslt-compat-11523#5-xslt-polyfill-extensions), [comment](https://github.com/whatwg/html/issues/11523#issuecomment-6540232318). |
 | What changes if an image chosen by `srcset` `w` descriptors always gets `sizes` as its natural width, even when `w` doesn't match the file's real width? | Started from an HTTP Archive custom metric, then emulated the new rule in Chrome.<br>[Repo](https://github.com/zcorpan/sizes-compat-3981), [comment](https://github.com/whatwg/html/issues/3981#issuecomment-6055848216). |
 | Can Firefox remove the nonstandard IndexedDB `mozGetAll`? | Searched response bodies for the name, separated real code from minifiers' name lists, and tested a Firefox build with it removed.<br>[Repo](https://github.com/zcorpan/mozgetall-compat-1577227), [comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1577227#c11). |
 
@@ -105,9 +108,9 @@ Research made with the skill:
 
 - Claude Code with this plugin (see [Install](../README.md#install)).
 - For HTTP Archive: a Google Cloud project with billing enabled, and the
-  [Google Cloud CLI](https://cloud.google.com/sdk/docs/install) (`gcloud auth login`; it includes
-  `bq`). BigQuery bills by data read, not rows returned: on demand, $6.25 per TiB at the time of
-  writing, with the first TiB each month free
+  [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), which includes `bq`; run
+  `gcloud auth login`, then set a default project to bill. BigQuery bills by data read, not rows
+  returned: on demand, $6.25 per TiB at the time of writing, with the first TiB each month free
   ([pricing](https://cloud.google.com/bigquery/pricing)). Use counters for all root pages in one
   crawl are about 0.1 TiB (under $1); searching every response body in one crawl is about 200 TiB
   (over $1,000), which is why the skill tries searches on Common Crawl and HTTP Archive's 10k-page
