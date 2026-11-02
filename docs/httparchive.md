@@ -134,9 +134,17 @@ QA runs made with the `httparchive-qa` skill:
   sample tables first. Tell Claude your budget; it caps every query and shows the size and cost
   before running it.
 - Python 3. Claude sets up a virtual environment for the scripts.
-- The browsers to test in, such as Chrome Canary or Firefox Nightly, or your own engine build with
-  the change. The scripts drive them with Playwright (Chromium) or Selenium (Firefox), installed in
-  the virtual environment; no browser MCP server is needed.
+- The browsers to test in, such as Chrome Canary, Firefox Nightly or Safari Technology Preview, or
+  your own engine build with the change. The scripts drive them with Playwright (Chromium) or
+  Selenium (Firefox and Safari), installed in the virtual environment; no browser MCP server is
+  needed. Safari TP needs a one-time setup on macOS: run its `safaridriver --enable`
+  (`/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver --enable`, which asks
+  for your password) and allow remote automation in its developer settings. Claude checks these
+  before a long run, since remote automation can turn off again after an update.
+- For mobile: Chrome emulates the crawl's mobile client (screen size, user agent, touch). Firefox
+  and Safari can't be emulated the same way: Claude can approximate Firefox on desktop with prefs,
+  or drive Firefox for Android on a device or emulator; for WebKit it uses Safari in the iOS
+  Simulator, which needs Xcode with an iOS runtime installed (release Safari, not TP).
 - Optionally, disk space for Common Crawl WARCs (about 1 GB each).
 
 ## Limits
@@ -148,5 +156,8 @@ QA runs made with the `httparchive-qa` skill:
 - Pages are only loaded. Breakage that needs clicks, typing, or form submission isn't seen unless
   you ask for it to be tested.
 - Live pages change after they're crawled, and they can differ by country.
+- Emulated mobile isn't the same as a phone: desktop Firefox with mobile prefs keeps desktop
+  defaults, and sites can tell emulation apart. Safari TP runs one page at a time, so Safari runs
+  take longest.
 - Results come from a sample: 0 broken out of 150 doesn't mean 0 on the web.
 - Claude makes mistakes. Look at the repo and the review images before relying on the conclusion.
