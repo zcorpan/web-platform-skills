@@ -1,6 +1,6 @@
 ---
 name: httparchive
-description: Use when measuring how the web uses a feature, or estimating the web compat impact of a spec or browser change, with HTTP Archive data in BigQuery or Common Crawl WARCs, including checking crawl-based estimates by loading sampled pages in a browser, or loading the pages that use a feature in a second implementation (a polyfill or extension, a flag or pref, another browser or build) against a reference to find its compat bugs. Triggers on "HTTP Archive", "httparchive", "Common Crawl", "research compat impact", "research how many pages use", "research whether this is web compatible". Queries are billed; get the user's confirmation before running any query that isn't a dry run.
+description: Use when measuring how the web uses a feature, or estimating the web compat impact of a spec or browser change, with HTTP Archive data in BigQuery or Common Crawl WARCs, including checking crawl-based estimates by loading sampled pages in a browser. Triggers on "HTTP Archive", "httparchive", "Common Crawl", "research compat impact", "research how many pages use", "research whether this is web compatible". Queries are billed; get the user's confirmation before running any query that isn't a dry run.
 ---
 
 # httparchive
@@ -85,14 +85,7 @@ description: Use when measuring how the web uses a feature, or estimating the we
 
 ## Finding bugs in an implementation
 
-- The same live comparison tests one implementation against a reference: a polyfill or extension vs native, a flag or pref flipped, a new build vs release, one browser vs another. A and A2 run the reference, B the candidate. The output is bugs to file, not an estimate; nothing to extrapolate.
-- If the feature is common enough that top-ranked pages alone give a usable sample, sample those, so the most-visited sites are well covered; add a long-tail sample if the long tail seems to use it differently. Otherwise use every page known to exercise it (e.g. an earlier compat run's sample, top-ranked and follow-up pages). Either way, include pages not rated affected: a polyfill changes feature detection, so unaffected-looking pages take new code paths.
-- Flag console errors and warnings only B logs, not just exceptions: polyfills often log failures instead of throwing. Ignore the setups' by-design messages. Also flag states only the candidate has (a loading indicator still up, raw content where A rendered).
-- Pages cover only what they happen to exercise. Read the candidate's code for where it differs from the reference by design (refetching instead of using the loaded response, running in every page and frame, its own stylesheet, a different document type or realm) and write a test page per difference, covering cases the pages may lack (non-GET loads, non-UTF-8 encodings, CSP, frames, scripts in the source). Also measure its cost on pages that don't use the feature.
-- Reduce each cause to a minimal local test page, run it in every browser in both setups, and commit the pages, runner, and output. Link the responsible code, and the engine or spec code defining the expected behavior, at a commit.
-- Size each cause on the run's pages ("N of M") by scanning the reference's output or the raw responses for its trigger. Commit the scans and a script recomputing every count the issues cite; rerun it before publishing.
-- Before suggesting a fix, prototype it in the candidate and run the test pages in each browser; if it doesn't work, say so in the issue instead. For a small working fix, offer a PR alongside the issue.
-- Search the tracker for existing reports first. File one issue per cause, every title sharing a tag (e.g. the research repo's name). Each gives what's wrong, the test case, a few affected pages with review images, and a hedged fix suggestion. Draft them; file only when asked. The README gives the method, counts flagged per browser, and searches for the tag, not the bug list.
+- To QA an implementation against a reference on the pages that use a feature (a polyfill or extension, a flag or pref, a new build, another browser), use the `httparchive-qa` skill.
 
 ## Research repo
 
