@@ -13,6 +13,7 @@ Claude Code plugins for web platform spec and wpt work. Install either or both.
 
 - `httparchive` skill: measuring how the web uses a feature and estimating web compat impact with HTTP Archive (BigQuery) and Common Crawl, and checking estimates in a browser, with a template for a reproducible research repo.
 - `httparchive-qa` skill: QA runs of an implementation (a browser's, a flag or pref, a build, a polyfill or extension) against other implementations on the pages that use the feature, with one fileable finding per cause. It loads only when asked for by name ("httparchive qa for &lt;feature>").
+- `page-reviewer` agent: a read-only reviewer (no shell or network) that both skills hand crawl and page material to, so instructions planted in pages can't run commands through it.
 
 See [docs/httparchive.md](docs/httparchive.md) for how they work and where the data comes from.
 

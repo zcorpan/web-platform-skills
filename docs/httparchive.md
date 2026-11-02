@@ -165,4 +165,7 @@ QA runs made with the `httparchive-qa` skill:
   defaults, and sites can tell emulation apart. Safari TP runs one page at a time, so Safari runs
   take longest.
 - Results come from a sample: 0 broken out of 150 doesn't mean 0 on the web.
+- Pages can contain text aimed at AI agents. Claude treats crawl and page content as data, not
+  instructions, hands it to reviewer agents that can only read files, and keeps pushes, posts, and
+  billed queries beyond your budget gated on you, but that isn't a guarantee.
 - Claude makes mistakes. Look at the repo and the review images before relying on the conclusion.
