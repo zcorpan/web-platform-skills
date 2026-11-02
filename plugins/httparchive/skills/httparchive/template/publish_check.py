@@ -3,7 +3,8 @@
 # Usage: python3 publish_check.py [--staged] [--crawl=GLOB,...] [EXTRA_TERM ...]
 #   Terms: the tester's public IP, city, region, country name and demonym, one per line in
 #   .publish-terms (gitignored), plus any EXTRA_TERM. --crawl: files of crawl data whose URLs are
-#   allowed anywhere (default queries/**/*.csv).
+#   allowed anywhere (default queries/**/*.csv). Bug links (Bugzilla and WebKit `show_bug.cgi?id=N`)
+#   are allowed too.
 # Exits 1 and lists matches if anything is found. Fix it in history (not just HEAD) before pushing.
 # With --staged, staged images are OCRed with ocr_check.py (other images aren't scanned).
 import glob, os, re, subprocess, sys, tempfile
@@ -33,6 +34,8 @@ patterns = {
 crawl_globs = next((a[8:] for a in sys.argv[1:] if a.startswith('--crawl=')), 'queries/**/*.csv').split(',')
 crawl_files = {f for g in crawl_globs for f in glob.glob(g, recursive=True)}
 allowed = set()
+# Bug tracker links carry only a bug number in the query string.
+bug_link = re.compile(r'https://(?:bugzilla\.mozilla\.org|bugs\.webkit\.org)/show_bug\.cgi\?id=\d+(?:#c?\d+)?[).,;:!\]]*')
 for path in crawl_files:
     allowed.update(patterns['URL with query string'].findall(open(path, errors='replace').read()))
 if '--staged' in sys.argv:
@@ -55,7 +58,7 @@ for label, path, sha in blobs:
         continue
     text = blob.decode('utf8', 'replace')
     for name, pat in patterns.items():
-        hits = [h for h in pat.findall(text) if h not in allowed]
+        hits = [h for h in pat.findall(text) if h not in allowed and not bug_link.fullmatch(h)]
         if hits:
             found += 1
             print(f'{label} {path}: {name} ({len(hits)}): {hits[0][:80]!r}')
