@@ -1,6 +1,7 @@
 # Rates the clear cases in compare.py's output (<out-dir>/auto.csv) and writes A|B pairs for the
 # rest to <out-dir>/review/<idx>.png. Creates <out-dir>/review.csv, prefilled with the auto ratings,
 # if it doesn't exist; fill in the empty ratings there by hand. Rerunning never overwrites it.
+# Pages in <out-dir>/nsfw.csv (nsfw_check.py) get their pairs in <out-dir>/review-nsfw/ (gitignored).
 # Usage: analyze.py <out-dir>
 import csv, json, os, re, sys
 from PIL import Image
@@ -38,7 +39,9 @@ def new_errors(r):
     return ' | '.join(e[:100] for k, e in messages(r['B']).items() if k not in before)[:300]
 
 
+nsfw = {int(r['idx']) for r in csv.DictReader(open(f'{out_dir}/nsfw.csv'))} if os.path.exists(f'{out_dir}/nsfw.csv') else set()
 os.makedirs(f'{out_dir}/review', exist_ok=True)
+os.makedirs(f'{out_dir}/review-nsfw', exist_ok=True)
 rated = []
 with open(f'{out_dir}/auto.csv', 'w', newline='') as f:
     w = csv.writer(f)
@@ -55,12 +58,18 @@ with open(f'{out_dir}/auto.csv', 'w', newline='') as f:
         im.paste(a.crop((0, 0, a.width, min(h, a.height))), (0, 0))
         im.paste(b.crop((0, 0, b.width, min(h, b.height))), (a.width + 12, 0))
         im.thumbnail((1500, 1100))
-        im.save(f"{out_dir}/review/{r['idx']:03}.png")
+        name = f"{r['idx']:03}.png"
+        if r['idx'] in nsfw and os.path.exists(f'{out_dir}/review/{name}'):
+            os.remove(f'{out_dir}/review/{name}')
+        im.save(f"{out_dir}/{'review-nsfw' if r['idx'] in nsfw else 'review'}/{name}")
 
 if not os.path.exists(f'{out_dir}/review.csv'):
     with open(f'{out_dir}/review.csv', 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['idx', 'stratum', 'page', 'rating', 'method', 'note'])
         for r, rating, reason in rated:
-            w.writerow([r['idx'], r['stratum'], r['page'], rating, 'auto' if rating else 'manual', reason if rating else ''])
-print(sum(1 for _, rating, _ in rated if not rating), 'pages to review in', f'{out_dir}/review/')
+            note = reason if rating else ''
+            if r['idx'] in nsfw:
+                note = f'nsfw; {note}' if note else 'nsfw'
+            w.writerow([r['idx'], r['stratum'], r['page'], rating, 'auto' if rating else 'manual', note])
+print(sum(1 for _, rating, _ in rated if not rating), 'pages to review in', f'{out_dir}/review/', 'and', f'{out_dir}/review-nsfw/')

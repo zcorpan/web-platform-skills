@@ -9,6 +9,7 @@ MEASURE_JS = """
   url: location.href,
   contentType: document.contentType,
   title: document.title,
+  rating: [...document.querySelectorAll('meta[name="rating" i]')].map(m => m.content).join(' ').slice(0, 100),
   text: (document.body ? document.body.innerText : document.documentElement ? document.documentElement.textContent : '').slice(0, 3000),
   scrollWidth: document.documentElement ? document.documentElement.scrollWidth : 0,
   scrollHeight: document.documentElement ? document.documentElement.scrollHeight : 0,

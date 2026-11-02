@@ -6,8 +6,9 @@
 #   allowed anywhere (default queries/**/*.csv). Bug links (Bugzilla and WebKit `show_bug.cgi?id=N`)
 #   are allowed too.
 # Exits 1 and lists matches if anything is found. Fix it in history (not just HEAD) before pushing.
-# With --staged, staged images are OCRed with ocr_check.py (other images aren't scanned).
-import glob, os, re, subprocess, sys, tempfile
+# With --staged, staged images are OCRed with ocr_check.py and checked for nudity with nsfw_check.py,
+# and review images or screenshots of pages in nsfw.csv are blocked (other images aren't scanned).
+import csv, glob, os, re, subprocess, sys, tempfile
 
 
 def run(*args):
@@ -63,18 +64,34 @@ for label, path, sha in blobs:
             found += 1
             print(f'{label} {path}: {name} ({len(hits)}): {hits[0][:80]!r}')
 if '--staged' in sys.argv and images:
-    import ocr_check
-    if not ocr_check.backend():
-        print('no OCR backend for staged images: pip install pyobjc-framework-Vision (macOS) or install tesseract')
-        found += 1
-    else:
-        with tempfile.TemporaryDirectory() as tmp:
-            files = {}
-            for i, (path, blob) in enumerate(images):
-                files[os.path.join(tmp, f'{i}{os.path.splitext(path)[1]}')] = path
-                open(list(files)[-1], 'wb').write(blob)
+    import nsfw_check, ocr_check
+    for path, blob in images:
+        # out*/review/<idx>.png and out*/shots/<idx>-<tag>.png of pages flagged in out*/nsfw.csv
+        out_dir, kind = os.path.split(os.path.dirname(path))[0], os.path.basename(os.path.dirname(path))
+        m = re.match(r'\d+', os.path.basename(path))
+        flagged = os.path.join(out_dir, 'nsfw.csv')
+        if kind in ('review', 'shots') and m and os.path.exists(flagged) and \
+                int(m.group()) in {int(r['idx']) for r in csv.DictReader(open(flagged))}:
+            print(f'staged {path}: page is in {flagged}; commit a repro test instead')
+            found += 1
+    with tempfile.TemporaryDirectory() as tmp:
+        files = {}
+        for i, (path, blob) in enumerate(images):
+            files[os.path.join(tmp, f'{i}{os.path.splitext(path)[1]}')] = path
+            open(list(files)[-1], 'wb').write(blob)
+        if not ocr_check.backend():
+            print('no OCR backend for staged images: pip install pyobjc-framework-Vision (macOS) or install tesseract')
+            found += 1
+        else:
             for f, x, y, line in ocr_check.check(list(files)):
                 print(f'staged {files[f]}: OCR text (tile at x {x:.2f}, y {y:.2f}): {line[:80]!r}')
+                found += 1
+        if not nsfw_check.backend():
+            print('no nudity check for staged images: pip install nudenet')
+            found += 1
+        else:
+            for f, x, y, label, score in nsfw_check.check(list(files)):
+                print(f'staged {files[f]}: adult content ({label} {score}, tile at x {x:.2f}, y {y:.2f})')
                 found += 1
 if not os.path.exists('.publish-terms'):
     print('no .publish-terms: add the tester\'s public IP, city, region, country name and demonym')

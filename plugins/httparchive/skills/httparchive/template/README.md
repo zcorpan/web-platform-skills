@@ -31,8 +31,9 @@ Proposed change: <what changes, in one or two sentences; which cases differ and 
 <!-- sample.py's strata, seed, and size (sample.jsonl). The browser and version; the before and
      after setups (flags, build, or emulation, from change.py); the sanity check. compare.py's
      visits: A and A2 before, B after, crawl-like viewports, waits, what's recorded (scrubbed at capture); output
-     in out/results.jsonl. analyze.py's auto-ratings and how many pages were reviewed by hand
-     (out/review/, out/review.csv); rechecks with recheck.py. -->
+     in out/results.jsonl. Adult pages flagged by nsfw_check.py (out/nsfw.csv). analyze.py's
+     auto-ratings and how many pages were reviewed by hand (out/review/, out/review.csv);
+     rechecks with recheck.py. -->
 
 <!-- extrapolate.py output (out/summary.md): -->
 
@@ -45,7 +46,8 @@ Proposed change: <what changes, in one or two sentences; which cases differ and 
 What's behind the ratings:
 
 <!-- One bullet per stratum group and rating that matters: the pattern, named sites or
-     libraries, the cause, and the review image (out/review/NNN.png) for the clearest case. -->
+     libraries, the cause, and the review image (out/review/NNN.png) for the clearest case.
+     Mark pages in out/nsfw.csv "(nsfw)" and link a repro test instead of an image. -->
 
 ## 3. Top-ranked pages
 
@@ -69,8 +71,9 @@ All on the <crawl date> crawl, run on <date>:
 ```sh
 bq query --use_legacy_sql=false --format=csv --max_rows=1000000 < hits.sql > hits.csv
 python3 sample.py hits.csv sample.jsonl <seed> <n> <stratum-columns...>
-python3 -m venv .venv && .venv/bin/pip install playwright pillow pyobjc-framework-Vision  # Vision for ocr_check.py on macOS; elsewhere install tesseract
+python3 -m venv .venv && .venv/bin/pip install playwright pillow nudenet pyobjc-framework-Vision  # Vision for ocr_check.py on macOS; elsewhere install tesseract
 .venv/bin/python compare.py "$CHROME" sample.jsonl out
+.venv/bin/python nsfw_check.py out
 .venv/bin/python analyze.py out
 # review out/review/*.png by hand and fill in the empty ratings in out/review.csv
 python3 extrapolate.py out/review.csv sample.jsonl > out/summary.md

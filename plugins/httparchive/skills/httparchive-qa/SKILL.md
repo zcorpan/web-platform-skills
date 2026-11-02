@@ -37,6 +37,7 @@ Do `httparchive`'s kickoff, with these additions.
 ## Findings
 
 - One directory per cause: `findings/<NN>-<slug>/` for the feature, `findings/infra-<NN>-<slug>/` for the infrastructure, numbered by impact (severity × pages affected × rank). Each `finding.md` can be filed as is: target tracker and component; what's wrong, with engine code at a commit and the spec steps; the reduced test with per-browser results; affected pages "N of M"; and the search for existing reports. No fix suggestions.
+- Mark adult pages `(nsfw)` wherever they're cited, and commit no images of them; the reduced test is the evidence.
 - Commit the test pages, runner and output, plus the scans and a script that recomputes every count the findings cite; rerun it before publishing.
 - Search the trackers and spec issues first. A known bug becomes a data point linked from the finding, not a new report.
 - File only when asked, per the `file-issue` skill: one issue per finding, each title ending with `[<owner>/<repo>]` (or the user's tag). Then link every filed and existing issue from its finding and the README's tables.

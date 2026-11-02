@@ -41,12 +41,12 @@ def ocr_tesseract(im):
     return out.stdout.decode('utf8', 'replace').splitlines()
 
 
-def tiles(im):
+def tiles(im, tile=TILE, overlap=OVERLAP, scale=SCALE):
     im = im.convert('RGB')
-    for top in range(0, max(im.height - OVERLAP, 1), TILE - OVERLAP):
-        for left in range(0, max(im.width - OVERLAP, 1), TILE - OVERLAP):
-            t = im.crop((left, top, min(left + TILE, im.width), min(top + TILE, im.height)))
-            yield left / im.width, top / im.height, t.resize((t.width * SCALE, t.height * SCALE))
+    for top in range(0, max(im.height - overlap, 1), tile - overlap):
+        for left in range(0, max(im.width - overlap, 1), tile - overlap):
+            t = im.crop((left, top, min(left + tile, im.width), min(top + tile, im.height)))
+            yield left / im.width, top / im.height, t.resize((t.width * scale, t.height * scale))
 
 
 def terms():

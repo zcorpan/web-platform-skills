@@ -58,7 +58,8 @@ before spending money on HTTP Archive.
 6. It extrapolates from the sample to the whole crawl, per popularity bucket.
 7. Everything goes in a git repo made from the skill's template: queries, results, scripts, review
    images, and a README. A pre-commit hook checks that nothing that identifies you (your IP or
-   location, which live pages can show) gets committed.
+   location, which live pages can show) gets committed, and no images of adult pages: those are
+   marked "nsfw" and get a minimal repro test instead.
 8. Claude drafts a comment for the spec issue or bug. When you're happy with it, it gives you the
    commands to create the GitHub repo and post the comment, and you run them.
 
