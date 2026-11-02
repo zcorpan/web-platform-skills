@@ -1,7 +1,7 @@
 # Web compat research with the `httparchive` skill
 
-The `httparchive` skill helps Claude answer "how many pages use this?", "is this spec or browser
-change web compatible?", and "does this polyfill or build match the reference?" It finds the pages
+The `httparchive` skill helps Claude answer "how many pages use this?" and "is this spec or browser
+change web compatible?", and the `httparchive-qa` skill "does this implementation match the others?" It finds the pages
 in public crawl data (Common Crawl for free, HTTP Archive's billed BigQuery tables for counts and
 popularity), loads a sample in a real browser in each setup, reviews the differences, and writes it
 all up in a reproducible git repo you can publish.
@@ -58,16 +58,26 @@ before spending money on HTTP Archive.
 8. Claude drafts a comment for the spec issue or bug. When you're happy with it, it gives you the
    commands to create the GitHub repo and post the comment, and you run them.
 
-## Finding bugs in an implementation
+## QA runs
 
-The same setup can test an implementation instead of a change: a polyfill or browser extension
-against native support, a flag or pref, a new build, or one browser against another. Claude loads
-the pages that use the feature (often the pages from an earlier compat run) with the reference and
-with the candidate, flags differences and errors only the candidate shows, and checks whether each
-one is the candidate's or the browser's. It also writes test pages for differences it finds in the
-candidate's code that the pages may miss. It reduces each cause to a minimal test page, counts the
-pages it affects, tries fixes before suggesting them, and drafts one issue per cause for the
-candidate's or browser's tracker.
+The `httparchive-qa` skill tests an implementation instead of a change: one browser's
+implementation of a feature against other browsers', a flag or pref, a new build, or a polyfill or
+extension against native support. Start it with "httparchive qa for &lt;feature>", plus any details
+you care about (browsers, pages, budget, how long to run).
+
+Before anything long runs, Claude finds where the feature is used and which libraries are behind
+it, checks that it can drive each browser, and runs a first small query. Then it asks you once
+about scope, with defaults: browsers and channels (including the candidate with the feature turned
+off, to tell the feature's bugs from other differences), which pages, which interactions, a budget
+for the whole run, and an effort level. After that it can run for hours without you.
+
+It loads the pages in every setup, reruns the ones that differ, and writes local test pages for
+patterns it finds in the pages' code. Once a cause is known it moves on to new pages rather than
+digging deeper, and it doesn't propose fixes unless you ask. Each cause becomes a finding in the
+repo, ready to file: what's wrong, a minimal test case with results per browser, the engine code and
+spec steps, how many pages it affects, and existing reports. Problems in what the feature builds on
+(such as the engine's navigation or loading code, or the browser automation) are listed separately.
+When you ask, it files one issue per finding.
 
 ## Prompting
 
@@ -103,6 +113,7 @@ Research made with the skill:
 | What breaks if browsers remove XSLT? | Use counters, plus Chrome Canary with XSLT on and off.<br>[Repo](https://github.com/zcorpan/xslt-compat-11523), [comment](https://github.com/whatwg/html/issues/11523#issuecomment-6263966715). |
 | Do the XSLT polyfill extensions render those pages like native XSLT? | Ran the same pages in Chrome Canary and Firefox Nightly with native XSLT, and with it off and the extension installed; filed the bugs found in the polyfill, the extension, and Firefox.<br>[Repo](https://github.com/zcorpan/xslt-compat-11523#5-xslt-polyfill-extensions), [comment](https://github.com/whatwg/html/issues/11523#issuecomment-6540232318). |
 | What changes if an image chosen by `srcset` `w` descriptors always gets `sizes` as its natural width, even when `w` doesn't match the file's real width? | Started from an HTTP Archive custom metric, then emulated the new rule in Chrome.<br>[Repo](https://github.com/zcorpan/sizes-compat-3981), [comment](https://github.com/whatwg/html/issues/3981#issuecomment-6055848216). |
+| Does Firefox Nightly's Navigation API behave like Chrome Canary's and Safari TP's on the pages that use it? | Scanned HTTP Archive's 10k-page sample for the libraries using it, ran those pages in each browser and in Firefox with the API off, and tested library patterns locally; filed spec issues and browser bugs.<br>[Repo](https://github.com/zcorpan/navigation-api-qa), [spec issue](https://github.com/whatwg/html/issues/13173). |
 | Can Firefox remove the nonstandard IndexedDB `mozGetAll`? | Searched response bodies for the name, separated real code from minifiers' name lists, and tested a Firefox build with it removed.<br>[Repo](https://github.com/zcorpan/mozgetall-compat-1577227), [comment](https://bugzilla.mozilla.org/show_bug.cgi?id=1577227#c11). |
 
 ## What you need
