@@ -42,8 +42,12 @@ before spending money on HTTP Archive.
    pattern in markup, CSS or scripts (see Prompting below).
 2. Claude finds candidate pages: by use counter in HTTP Archive, or for patterns by scanning
    Common Crawl first and then running one HTTP Archive query for counts and popularity ranks.
-3. Before the first billed query, and any over your budget, Claude does a dry run, shows you how
-   much data it would read, and waits for your OK.
+3. Before the long part of the run, while you're there, Claude tries the queries at small scale (a
+   dry run shows how much data each would read), checks that it can drive each browser and switch
+   the change, gets anything only you can do out of the way (a build, enabling a browser driver),
+   and asks you once about scope and a budget for the whole run. After that it runs to the end
+   without stopping, except for a query over the budget or early results that already rule the
+   change out.
 4. It loads the pages live: today's behavior twice (to see what changes on its own, like ads and
    carousels) and with the change once. The change comes from a browser flag or pref, a build you
    provide, or by rewriting the page. It records JS errors, console messages, layout, and

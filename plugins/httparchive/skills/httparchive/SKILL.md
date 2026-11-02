@@ -5,6 +5,17 @@ description: Use when measuring how the web uses a feature, or estimating the we
 
 # httparchive
 
+## Kickoff, while the user is there
+
+Settle everything that needs the user before the long part of the run, so it can then run to the end without stopping.
+
+- Work out how pages will be found (a use counter, custom metric, or pattern) and how the change gets turned on and off (a switch, emulation, or a build). If it needs a build, get it or start it now.
+- Try the data at small scale: prototype pattern searches on local Common Crawl or the 10k sample tables, dry-run the planned queries, and run the first small one once approved.
+- Start the repo and `.publish-terms` (see Research repo), then smoke-test every setup on a local page: the browser launches, the sanity check shows each setup runs the intended behavior, and the measurements come back.
+- List one-time actions only the user can do (providing a build, enabling a driver, OS permissions, installing a runtime) and get them done now.
+- Propose the scope in one round of questions, with defaults: crawl date, clients and denominator, samples and strata, setups, a budget for the whole run (approved once, so queries within it don't need asking again), and when to stop early. Suggest an effort level for the session: `/effort xhigh` or `max` for a multi-hour run.
+- Record the agreed scope in the README, so a new context can resume the run.
+
 ## Common Crawl first
 
 - For anything answered from response bodies (markup patterns, parser changes, inline CSS/JS), start with Common Crawl WARCs: free, no account, quick to iterate. Look for local copies first (e.g. `~/git/commoncrawl/cc-data/<crawl>/`, see its `MANIFEST.md`; else ask the user where they keep them) and reuse or extend that seeded pick instead of downloading a new set.

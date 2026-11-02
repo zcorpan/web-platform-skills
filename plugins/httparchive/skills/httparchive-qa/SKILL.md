@@ -5,22 +5,22 @@ description: Use only when the user explicitly asks for an httparchive QA run, e
 
 # httparchive-qa
 
-Read `../httparchive/SKILL.md` (relative to this skill's base directory) and follow its Common Crawl, Cost, Querying, Use counters, Custom metrics, Live comparison and Research repo sections. Its estimate sections don't apply: the output is bugs, not an extrapolated rate.
+Read `../httparchive/SKILL.md` (relative to this skill's base directory) and follow its Kickoff, Common Crawl, Cost, Querying, Use counters, Custom metrics, Live comparison and Research repo sections. Its estimate sections don't apply: the output is bugs, not an extrapolated rate.
 
 ## Kickoff, while the user is there
+
+Do `httparchive`'s kickoff, with these additions.
 
 - Find the feature's spec, which engines ship it, how to turn it off in the candidate (a pref or flag), and its known interop failures (wpt.fyi results for its tests in the browsers under test). Each failure is a lead to check against pages.
 - Size usage cheaply before proposing a sample: use counters (read where they fire; uses that need interaction are missing from the crawl), the 10k sample tables, local Common Crawl. Group usage by the library or framework behind it, and separate pages that act through the feature from pages that only detect it or listen: bugs show up on the former.
 - Start the repo (`/tmp/<feature>-qa/`) from `../httparchive/template/`, but fill in this skill's `template/README.md` instead of its README, and extend its one-browser before/after harness to the run's setups.
-- Smoke-test automation in every setup on a local page that uses the feature, and run the first small query. List one-time actions only the user can do (enabling a driver, OS permissions, installing a runtime) and get them done now.
-- Then propose the scope in one round of questions, with defaults:
+- Smoke-test every setup on a local page that uses the feature.
+- Scope defaults:
   - Setups: the reference twice (noise floor), the candidate, the candidate with the feature off (separates the feature's bugs from other engine differences), and the other engines' current dev channels.
   - Pages: top-ranked pages that act through the feature first, plus some that only detect it (a candidate changes feature detection, so they take new code paths); the long tail and emulated mobile if they may use it differently.
   - Interactions that make pages exercise the feature, with user-like input rather than script where the feature can tell them apart.
   - The infrastructure the feature builds on: included by default, reported separately.
-  - A budget for the whole run, approved once so it can run unattended; duration; stopping rule.
-  - An effort level for the session: suggest `/effort xhigh` or `max` for a multi-hour unattended run.
-- Record the agreed scope and stopping rule in the README, so a new context can resume the run.
+  - Duration and the stopping rule (see Running), recorded in the README with the rest of the scope.
 
 ## Running
 
