@@ -69,8 +69,8 @@ All on the <crawl date> crawl, run on <date>:
 ## Reproduce
 
 ```sh
-bq query --use_legacy_sql=false --format=csv --max_rows=1000000 < hits.sql > hits.csv
-python3 sample.py hits.csv sample.jsonl <seed> <n> <stratum-columns...>
+bq query --use_legacy_sql=false --format=csv --max_rows=1000000 < queries/hits.sql > queries/hits.csv
+python3 sample.py queries/hits.csv sample.jsonl <seed> <n> <stratum-columns...>
 python3 -m venv .venv && .venv/bin/pip install playwright pillow nudenet pyobjc-framework-Vision  # Vision for ocr_check.py on macOS; elsewhere install tesseract
 .venv/bin/python compare.py "$CHROME" sample.jsonl out
 .venv/bin/python nsfw_check.py out

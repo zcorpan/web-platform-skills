@@ -2,9 +2,9 @@
 # or with --staged only the staged files (hooks/pre-commit runs that on every commit).
 # Usage: python3 publish_check.py [--staged] [--crawl=GLOB,...] [EXTRA_TERM ...]
 #   Terms: the tester's public IP, city, region, country name and demonym, one per line in
-#   .publish-terms (gitignored), plus any EXTRA_TERM. --crawl: files of crawl data whose URLs are
-#   allowed anywhere (default queries/**/*.csv). Bug links (Bugzilla and WebKit `show_bug.cgi?id=N`)
-#   are allowed too.
+#   .publish-terms (gitignored), plus any EXTRA_TERM. --crawl: files of crawl data, not scanned and
+#   whose URLs are allowed anywhere (default queries/**/*,crawl/**/*). Bug links (Bugzilla and
+#   WebKit `show_bug.cgi?id=N`) are allowed too.
 # Exits 1 and lists matches if anything is found. Fix it in history (not just HEAD) before pushing.
 # With --staged, staged images are OCRed with ocr_check.py and checked for nudity with nsfw_check.py,
 # and review images or screenshots of pages in nsfw.csv are blocked (other images aren't scanned).
@@ -32,8 +32,8 @@ patterns = {
     'long base64 payload': re.compile(r'(?<!base64,)(?<![A-Za-z0-9+/_-])[A-Za-z0-9+/_-]{200,}={0,2}'),
 }
 # URLs from the crawl data were recorded by HTTP Archive, not by us; allow them anywhere.
-crawl_globs = next((a[8:] for a in sys.argv[1:] if a.startswith('--crawl=')), 'queries/**/*.csv').split(',')
-crawl_files = {f for g in crawl_globs for f in glob.glob(g, recursive=True)}
+crawl_globs = next((a[8:] for a in sys.argv[1:] if a.startswith('--crawl=')), 'queries/**/*,crawl/**/*').split(',')
+crawl_files = {f for g in crawl_globs for f in glob.glob(g, recursive=True) if os.path.isfile(f)}
 allowed = set()
 # Bug tracker links carry only a bug number in the query string.
 bug_link = re.compile(r'https://(?:bugzilla\.mozilla\.org|bugs\.webkit\.org)/show_bug\.cgi\?id=\d+(?:#c?\d+)?[).,;:!\]]*')
