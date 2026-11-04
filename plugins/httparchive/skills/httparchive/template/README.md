@@ -1,7 +1,7 @@
 # Compat impact of <change> (<org/repo#issue>)
 
 <!-- Fill in or delete every comment and placeholder. Take each number from a committed file and
-     say which. No billing project, account, job IDs, or costs; bytes processed only. -->
+     say which. No billing project, account, job IDs, or costs; bytes processed only, in TiB. -->
 
 Proposed change: <what changes, in one or two sentences; which cases differ and which don't>.
 
@@ -63,7 +63,7 @@ What's behind the ratings:
 
 All on the <crawl date> crawl, run on <date>:
 
-| Query | Bytes processed |
+| Query | Bytes processed (TiB) |
 |---|---|
 
 ## Reproduce

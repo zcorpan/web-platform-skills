@@ -1,7 +1,7 @@
 # <Feature> QA: <candidate> vs <reference browsers> on pages that use it
 
 <!-- Fill in or delete every comment and placeholder. Take each number from a committed file and
-     say which. No billing project, account, job IDs, or costs; bytes processed only. -->
+     say which. No billing project, account, job IDs, or costs; bytes processed only, in TiB. -->
 
 <One or two sentences: what was tested, in which browsers and channels, on which pages.> Findings
 are in [`findings/`](findings/), one directory per cause, each with a test case and per-browser
