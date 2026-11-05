@@ -13,7 +13,7 @@ Do `httparchive`'s kickoff, with these additions.
 
 - Find the feature's spec, which engines ship it, how to turn it off in the candidate (a pref or flag), and its known interop failures (wpt.fyi results for its tests in the browsers under test). Each failure is a lead to check against pages.
 - Size usage cheaply before proposing a sample: use counters (read where they fire; uses that need interaction are missing from the crawl), the 10k sample tables, local Common Crawl. Group usage by the library or framework behind it, and separate pages that act through the feature from pages that only detect it or listen: bugs show up on the former.
-- Start the repo (`/tmp/<feature>-qa/`) from `../httparchive/template/`, but fill in this skill's `template/README.md` instead of its README, and extend its one-browser before/after harness to the run's setups.
+- Start the repo (`/tmp/<feature>-qa/`, or the working directory as in `httparchive`'s Research repo) from `../httparchive/template/`, but fill in this skill's `template/README.md` instead of its README, and extend its one-browser before/after harness to the run's setups.
 - Smoke-test every setup on a local page that uses the feature.
 - Scope defaults:
   - Setups: the reference twice (noise floor), the candidate, the candidate with the feature off (separates the feature's bugs from other engine differences), and the other engines' current dev channels.
