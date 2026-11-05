@@ -12,6 +12,17 @@ Proposed change: <what changes, in one or two sentences; which cases differ and 
      what's behind broken and worse (sites, libraries, patterns, and fixes shipped upstream);
      how the field rate (use counters) compares with the crawl rate; anything the crawl can't size. -->
 
+## Scope
+
+<!-- As agreed at kickoff, so a new context can resume the run: crawl date, clients and
+     denominator, samples and strata, setups, budget, stopping rule. A few bullets. -->
+
+## What breaks and why
+
+<!-- Only if something breaks: the cause, traced to the spec or engine code, and each variant
+     measured against the change's goal, with the one you'd recommend. The sections below hold
+     the data; don't repeat it here. -->
+
 ## 1. HTTP Archive
 
 <!-- If a Common Crawl corpus was used too: crawl, seed, WARC count, HTML responses, and which
