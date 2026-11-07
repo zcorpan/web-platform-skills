@@ -43,7 +43,7 @@ Proposed change: <what changes, in one or two sentences; which cases differ and 
 <!-- sample.py's strata, seed, and size (sample.jsonl). The browser and version; the before and
      after setups (flags, build, or emulation, from change.py); the sanity check. compare.py's
      visits: A and A2 before, B after, crawl-like viewports, waits, what's recorded (scrubbed at capture); output
-     in out/results.jsonl. Adult pages flagged by nsfw_check.py (out/nsfw.csv). analyze.py's
+     in out/results.jsonl. Adult pages flagged by nsfw_check.py and analyze.py (out/nsfw.csv). analyze.py's
      auto-ratings and how many pages were reviewed by hand (out/review/, out/review.csv);
      rechecks with recheck.py. -->
 
