@@ -45,9 +45,10 @@ before spending money on HTTP Archive.
 3. Before the long part of the run, while you're there, Claude tries the queries at small scale (a
    dry run shows how much data each would read), checks that it can drive each browser and switch
    the change, gets anything only you can do out of the way (a build, enabling a browser driver),
-   and asks you once about scope and a budget for the whole run. After that it runs to the end
-   without stopping, except for a query over the budget or early results that already rule the
-   change out.
+   and asks you once about scope and a budget for the whole run, with a rough guess of how long it
+   will take. After that it runs to the end without stopping, except for a query over the budget
+   or early results that already rule the change out. A status page it opens in your browser
+   shows the current step, the time left, and the findings so far.
 4. It loads the pages live: today's behavior twice (to see what changes on its own, like ads and
    carousels) and with the change once. The change comes from a browser flag or pref, a build you
    provide, or by rewriting the page. It records JS errors, console messages, layout, and
@@ -76,7 +77,8 @@ Before anything long runs, Claude finds where the feature is used and which libr
 it, checks that it can drive each browser, and runs a first small query. Then it asks you once
 about scope, with defaults: browsers and channels (including the candidate with the feature turned
 off, to tell the feature's bugs from other differences), which pages, which interactions, a budget
-for the whole run, and an effort level. After that it can run for hours without you.
+for the whole run, and an effort level, with a rough guess of how long it will take. After that it
+can run for hours without you.
 
 It loads the pages in every setup, reruns the ones that differ, and writes local test pages for
 patterns it finds in the pages' code. Once a cause is known it moves on to new pages rather than

@@ -6,3 +6,5 @@ out*/review-nsfw/
 .publish-terms
 # Notes for improving the skill (its SKILL.md, Improving the skill); not published
 skill-notes.md
+# Live run status for the user (SKILL.md, Kickoff)
+status.html

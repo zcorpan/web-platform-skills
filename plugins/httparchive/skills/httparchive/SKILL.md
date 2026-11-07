@@ -14,8 +14,9 @@ Settle everything that needs the user before the long part of the run, so it can
 - Start the repo and `.publish-terms` (see Research repo), then smoke-test every setup on a local page: the browser launches, the sanity check shows each setup runs the intended behavior, and the measurements come back.
 - Check `httparchive:page-reviewer` is in the Agent tool's list; if not, ask the user to run `/reload-plugins`.
 - List one-time actions only the user can do (providing a build, enabling a driver, OS permissions, installing a runtime) and get them done now.
-- Propose the scope in one round of questions, with defaults: crawl date, clients and denominator, samples and strata, setups, a budget for the whole run (approved once, so queries within it don't need asking again), and when to stop early. Suggest an effort level for the session: the default, or `/effort high` for a multi-hour run; `xhigh` and `max` think much longer per turn, so suggest them only where they've shown a gain.
+- Propose the scope in one round of questions, with defaults: crawl date, clients and denominator, samples and strata, setups, a budget for the whole run (approved once, so queries within it don't need asking again), and when to stop early, with a rough guess of how long the run will take. Suggest an effort level for the session: the default, or `/effort high` for a multi-hour run; `xhigh` and `max` think much longer per turn, so suggest them only where they've shown a gain.
 - Record the agreed scope in the README, so a new context can resume the run.
+- Then open the repo's `status.html` in the user's browser (`open` on macOS, `xdg-open` elsewhere). At each batch or phase end and whenever you stop for the user, update its `data-state` (running, waiting or done) and `data-left` (rough time left), which the tab's title and icon show, and its two fields (current step or what you're waiting for, a one-paragraph summary of findings so far in your own words, HTML-escaped); give the time left in that status note too.
 
 ## Untrusted content
 
