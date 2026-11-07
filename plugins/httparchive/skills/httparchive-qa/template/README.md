@@ -31,9 +31,10 @@ results. Filed issues have `[<owner>/<repo>]` at the end of their titles.
 
 ## 2. Live comparison
 
-<!-- Scope as agreed at kickoff: setups (browser, channel, version, prefs/flags, controls),
-     viewports, page sources and samples (seed, strata), interactions per visit, what's recorded,
-     what's flagged, rechecks, stopping rule. Harness changes mid-run. -->
+<!-- Scope: setups (browser, channel, version, prefs/flags, controls), viewports, page sources
+     and samples (seed, strata), interactions per visit, what's recorded, what's flagged,
+     rechecks, stopping rule. Harness changes mid-run. State the scope itself; don't mention the
+     kickoff or when it was agreed. -->
 
 ### Page results
 

@@ -14,8 +14,9 @@ Proposed change: <what changes, in one or two sentences; which cases differ and 
 
 ## Scope
 
-<!-- As agreed at kickoff, so a new context can resume the run: crawl date, clients and
-     denominator, samples and strata, setups, budget, stopping rule. A few bullets. -->
+<!-- So a new context can resume the run: crawl date, clients and denominator, samples and
+     strata, setups, budget, stopping rule. A few bullets. State the scope itself; don't mention
+     the kickoff or when it was agreed. -->
 
 ## What breaks and why
 
