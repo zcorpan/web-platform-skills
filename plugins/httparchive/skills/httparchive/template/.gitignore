@@ -4,3 +4,5 @@ out*/shots/
 out*/review-nsfw/
 *.log
 .publish-terms
+# Notes for improving the skill (its SKILL.md, Improving the skill); not published
+skill-notes.md

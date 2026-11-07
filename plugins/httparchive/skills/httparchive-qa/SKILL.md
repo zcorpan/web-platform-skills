@@ -5,7 +5,7 @@ description: Use only when the user explicitly asks for an httparchive QA run, e
 
 # httparchive-qa
 
-Read `../httparchive/SKILL.md` (relative to this skill's base directory) and follow its Kickoff, Untrusted content, Common Crawl, Cost, Querying, Use counters, Custom metrics, Live comparison and Research repo sections. Its estimate sections don't apply: the output is bugs, not an extrapolated rate.
+Read `../httparchive/SKILL.md` (relative to this skill's base directory) and follow its Kickoff, Untrusted content, Common Crawl, Cost, Querying, Use counters, Custom metrics, Live comparison, Research repo and Improving the skill sections. Its estimate sections don't apply: the output is bugs, not an extrapolated rate.
 
 ## Kickoff, while the user is there
 

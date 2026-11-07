@@ -62,6 +62,8 @@ before spending money on HTTP Archive.
    marked "nsfw" and get a minimal repro test instead.
 8. Claude drafts a comment for the spec issue or bug. When you're happy with it, it gives you the
    commands to create the GitHub repo and post the comment, and you run them.
+   If the run hit something the skill got wrong or should have said, Claude then offers a PR
+   to improve the skill with the general lessons. It doesn't for research you keep private.
 
 ## QA runs
 
