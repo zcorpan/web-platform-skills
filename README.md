@@ -1,6 +1,6 @@
 # web-platform-skills
 
-Claude Code plugins for web platform spec and wpt work. Install either or both.
+Claude Code plugins for web platform spec and wpt work. Install any of them.
 
 `web-platform-skills`:
 
@@ -17,6 +17,10 @@ Claude Code plugins for web platform spec and wpt work. Install either or both.
 
 See [docs/httparchive.md](docs/httparchive.md) for how they work and where the data comes from.
 
+`agent-tooling` (from [zcorpan/agent-tooling](https://github.com/zcorpan/agent-tooling)):
+
+- `build-tooling` skill: building and improving skills, plugins, and the scripts they drive. Skills here use its rules when offering a PR to improve themselves, but don't require it.
+
 The `httparchive` skill used to be part of `web-platform-skills`; install the `httparchive` plugin to keep it.
 
 ## Install
@@ -27,7 +31,10 @@ From Claude Code:
 /plugin marketplace add zcorpan/web-platform-skills
 /plugin install web-platform-skills@web-platform-skills
 /plugin install httparchive@web-platform-skills
+/plugin install agent-tooling@web-platform-skills
 ```
+
+Auto-update is off by default for this marketplace; to turn it on, open `/plugin`, go to Marketplaces, select `web-platform-skills`, and choose Enable auto-update.
 
 Or clone and symlink them into your skills directory, where they load as `web-platform-skills@skills-dir` and `httparchive@skills-dir`:
 

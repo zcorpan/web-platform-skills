@@ -14,6 +14,14 @@
       "name": "httparchive",
       "source": "./plugins/httparchive",
       "description": "Estimate web compat impact with HTTP Archive and Common Crawl"
+    },
+    {
+      "name": "agent-tooling",
+      "source": {
+        "source": "github",
+        "repo": "zcorpan/agent-tooling"
+      },
+      "description": "Rules for building and improving Claude Code skills, plugins and the tools they drive"
     }
   ]
 }
