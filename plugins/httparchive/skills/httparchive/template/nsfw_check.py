@@ -1,13 +1,12 @@
-# Flags adult pages in compare.py's output, so they're marked nsfw and get a repro test instead of
-# review images. Page signals: an adult <meta name="rating"> (recorded by harness.py) and the host
-# being blocked by Cloudflare's family resolver (which also blocks malware). Writes
-# <out-dir>/nsfw.csv (idx, page, reasons), keeping rows already there (add pages by hand).
-# Run after compare.py and before analyze.py.
-# check() is the image check, used by analyze.py on the screenshots of pages needing review and by
-# publish_check.py on staged images: NudeNet (pip install nudenet) finding exposed nudity in a 400px
-# tile. It errs toward flagging: nude paintings and sculpture get flagged, lingerie and swimwear
-# pass. Adult content without nudity isn't caught, so also flag by eye. Downscaled images (review
-# pairs) are caught less often.
+# Flags adult pages in compare.py's output, so they're marked nsfw and their images aren't
+# committed (a repro test is the evidence). Page signals: an adult <meta name="rating"> (recorded by
+# harness.py) and the host being blocked by Cloudflare's family resolver (which also blocks
+# malware). Writes <out-dir>/nsfw.csv (idx, page, reasons), keeping rows already there (add pages
+# by hand). Run after compare.py and before analyze.py.
+# check() is the image check, used by publish_check.py on staged images: NudeNet (pip install
+# nudenet) finding exposed nudity in a 400px tile. It errs toward flagging: nude paintings and
+# sculpture get flagged, lingerie and swimwear pass. Adult content without nudity isn't caught, so
+# also flag by eye. Downscaled images (review pairs) are caught less often.
 # Usage: nsfw_check.py <out-dir>
 import csv, json, os, re, sys, urllib.parse, urllib.request
 from PIL import Image
