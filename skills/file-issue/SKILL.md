@@ -10,7 +10,8 @@ description: Use when drafting or filing a spec issue (WHATWG, W3C, or other Git
 - One issue per issue; cut tangents. If a second problem appears, file it separately instead of adding a "Related" paragraph.
 - Problem + evidence, then stop. One hedged sentence suggesting a fix is OK. Keep refs terse: "(Found in #123.)", not a clause.
 - When suggesting a fix, verify its impact carefully to avoid regressions. Prefer the fix that changes the fewest implementations; don't resolve engine disagreement with implementation-defined or optional behavior.
-- Quote the spec as a block quote (colon intro, "...and " continuation), not inline.
+- Quote the spec as a block quote (colon intro, "...and " continuation), not inline. Introduce the section the issue is about with its bare URL ("https://…#anchor says:").
+- Supporting references that lack GitHub shorthand (comments, tests, other spec sections) are markdown links with short text ("[raised here](…)"), not bare URLs.
 - Hedge implementation claims ("appear to run", "seems to") only when inferred from test results alone. If the engine source has also been read, state it with confidence ("runs"). Report observed behavior, not code.
 - If the problem is spec-only and no browser distinguishes, omit browsers entirely. Don't report "couldn't reproduce".
 - Never say "all engines" or "all three". Name the tested browsers/engines, pick one naming scheme, and state the channel. Say "Safari TP" when the tested browser was Safari Technology Preview; plain "Safari" means release.
