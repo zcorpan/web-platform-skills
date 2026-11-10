@@ -153,11 +153,18 @@ else:
     statuses = sorted(glob.glob(f"{UPDATES}/Applications/*/updates/0/update.status"))
 
 for status in statuses:
-    if os.path.exists(status):
+    try:
+        with open(status) as f:
+            state = f.read().strip()
+    except OSError:
+        continue
+    # pending* and applied* wait for the next start and applying is mid-update; succeeded and
+    # failed are leftovers.
+    if state.startswith(("pending", "applied", "applying")):
         app_name = status[len(UPDATES) + 1 :].split("/updates/0/")[0].split("/")[-1]
         print(
-            f"{app_name} has a staged update ({status} exists). Ask the user to restart "
-            f"{app_name}, and don't launch it via WebDriver until that file is gone.",
+            f"{app_name} has a staged update ({status} says {state}). Ask the user to "
+            f"restart {app_name}, and don't launch it via WebDriver until that changes.",
             file=sys.stderr,
         )
         sys.exit(2)
