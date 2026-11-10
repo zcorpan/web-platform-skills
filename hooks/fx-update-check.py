@@ -18,19 +18,79 @@ command = hook_input.get("tool_input", {}).get("command", "")
 cwd = hook_input.get("cwd") or os.getcwd()
 
 
-def python_sources():
-    """Yield inline `python -c` code and Python scripts in the command, with
-    the modules they import from their own directory."""
+SEPARATORS = set(";&|()\n")
+WRAPPERS = {"env", "exec", "nohup", "time", "caffeinate"}
+PYTHON = re.compile(r"python[\d.]*$")
+
+
+def simple_commands():
+    """Split the command into simple commands' word lists, dropping redirections."""
+    lex = shlex.shlex(command, posix=True, punctuation_chars="();<>|&\n")
+    lex.whitespace = " \t"
+    lex.whitespace_split = True
     try:
-        tokens = shlex.split(command)
+        tokens = list(lex)
     except ValueError:
         tokens = command.split()
-    pending = []
-    for i, token in enumerate(tokens):
-        if token == "-c" and i > 0 and "python" in tokens[i - 1] and i + 1 < len(tokens):
-            pending.append((tokens[i + 1], cwd))
-        elif token.endswith(".py"):
-            pending.append((None, os.path.join(cwd, os.path.expanduser(token))))
+    words = []
+    skip = False
+    for token in tokens:
+        if set(token) <= SEPARATORS:
+            if words:
+                yield words
+            words = []
+        elif set(token) <= set("<>&"):
+            skip = True
+        elif skip:
+            skip = False
+        else:
+            words.append(token)
+    if words:
+        yield words
+
+
+def scripts_run():
+    """Yield (inline code, None) or (None, script path) for each Python program the command
+    runs: `python [opts] script.py`, `python -c CODE` or `./script.py`, possibly after `env`,
+    `uv run` and the like. Arguments naming .py files (`git add x.py`) don't count."""
+    for words in simple_commands():
+        i = 0
+        while i < len(words):
+            w = words[i]
+            if re.match(r"\w+=", w) or w in WRAPPERS or (w == "run" and i and words[i - 1] == "uv"):
+                i += 1
+            elif w == "uv" and i + 1 < len(words) and words[i + 1] == "run":
+                i += 1
+            elif w.startswith("-") and i and words[i - 1] in WRAPPERS:
+                i += 1
+            else:
+                break
+        if i >= len(words):
+            continue
+        if words[i].endswith(".py"):
+            yield None, words[i]
+        elif PYTHON.match(os.path.basename(words[i])):
+            j = i + 1
+            while j < len(words):
+                w = words[j]
+                if w == "-c" and j + 1 < len(words):
+                    yield words[j + 1], None
+                    break
+                if w in ("-m", "-"):
+                    break
+                j += 2 if w in ("-W", "-X") else 1
+                if not w.startswith("-"):
+                    yield None, w
+                    break
+
+
+def python_sources():
+    """Yield the Python code the command runs, with the modules it imports from its own
+    directory."""
+    pending = [
+        (source, cwd) if path is None else (None, os.path.join(cwd, os.path.expanduser(path)))
+        for source, path in scripts_run()
+    ]
     seen = set()
     while pending:
         source, path = pending.pop()
