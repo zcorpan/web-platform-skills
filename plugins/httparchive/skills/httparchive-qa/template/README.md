@@ -52,6 +52,8 @@ results. Filed issues have `[<owner>/<repo>]` at the end of their titles.
 
 ## Reproduce
 
+This run was done with the [`httparchive-qa` skill](https://github.com/zcorpan/web-platform-skills/blob/main/docs/httparchive.md). The steps below are standalone and rerun the same analysis without the skill.
+
 ```sh
 ```
 

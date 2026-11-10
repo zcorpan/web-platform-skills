@@ -80,6 +80,8 @@ All on the <crawl date> crawl, run on <date>:
 
 ## Reproduce
 
+This run was done with the [`httparchive` skill](https://github.com/zcorpan/web-platform-skills/blob/main/docs/httparchive.md). The steps below are standalone and rerun the same analysis without the skill.
+
 ```sh
 bq query --use_legacy_sql=false --format=csv --max_rows=1000000 < queries/hits.sql > queries/hits.csv
 python3 sample.py queries/hits.csv sample.jsonl <seed> <n> <stratum-columns...>
