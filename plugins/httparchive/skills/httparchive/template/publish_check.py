@@ -2,10 +2,11 @@
 # or with --staged only the staged files (hooks/pre-commit runs that on every commit).
 # Usage: python3 publish_check.py [--staged] [--crawl=GLOB,...] [EXTRA_TERM ...]
 #   Terms: the tester's public IP, city, region, country name and demonym, one per line in
-#   .publish-terms (gitignored), plus any EXTRA_TERM. --crawl: files of crawl data, not scanned and
-#   whose URLs are allowed anywhere (default queries/**/*,crawl/**/*; only files in git count, so
-#   gitignored downloads don't slow every commit). Bug links (Bugzilla and WebKit
-#   `show_bug.cgi?id=N`) are allowed too.
+#   .publish-terms (gitignored), plus any EXTRA_TERM. --crawl: files of crawl data, scanned only for
+#   tokens GitHub's secret scanning alerts on (public client IDs too; redact them), and whose URLs
+#   are allowed anywhere (default queries/**/*,crawl/**/*; only files in git count, so gitignored
+#   downloads don't slow every commit). Bug links (Bugzilla and WebKit `show_bug.cgi?id=N`) are
+#   allowed too.
 # Exits 1 and lists matches if anything is found. Fix it in history (not just HEAD) before pushing.
 # With --staged, staged images are OCRed with ocr_check.py and checked for nudity with nsfw_check.py,
 # and review images or screenshots of pages in nsfw.csv are blocked (other images aren't scanned).
@@ -33,6 +34,18 @@ patterns = {
     'country-specific host': re.compile(r'\b(?:google|bing|yahoo|amazon|facebook)\.(?:co\.)?(?!com\b|net\b|org\b)[a-z]{2}\b'),
     'long base64 payload': re.compile(r'(?<!base64,)(?<![A-Za-z0-9+/_-])[A-Za-z0-9+/_-]{200,}={0,2}'),
 }
+# Tokens that web pages and URLs carry and GitHub alerts on in public repos, see
+# https://docs.github.com/en/code-security/secret-scanning/introduction/supported-secret-scanning-patterns
+secret_patterns = {'secret-scanner pattern': re.compile('|'.join([
+    r'\bwx[0-9a-f]{16}\b',  # WeChat app ID
+    r'AIza[0-9A-Za-z_-]{35}',  # Google API key
+    r'\b[ps]k\.eyJ[0-9A-Za-z_-]{20,}',  # Mapbox
+    r'\b(?:AKIA|ASIA)[0-9A-Z]{16}\b',  # AWS
+    r'\b[rs]k_live_[0-9A-Za-z]{20,}',  # Stripe
+    r'\bxox[abposr]-[0-9A-Za-z-]{10,}',  # Slack
+    r'\bgh[pousr]_[0-9A-Za-z]{36}|\bgithub_pat_[0-9A-Za-z_]{40,}',  # GitHub
+    r'-----BEGIN [A-Z ]*PRIVATE KEY-----',
+]))}
 # URLs from the crawl data were recorded by HTTP Archive, not by us; allow them anywhere.
 crawl_globs = next((a[8:] for a in sys.argv[1:] if a.startswith('--crawl=')), 'queries/**/*,crawl/**/*').split(',')
 in_git = set(run('git', 'ls-files').splitlines())
@@ -52,17 +65,18 @@ else:
              for meta, path in (l.split('\t', 1) for l in run('git', 'ls-tree', '-r', commit).splitlines())]
 seen, found, images = set(), 0, []
 for label, path, sha in blobs:
+    crawl = path in crawl_files
     # Third-party libraries copied from a CDN for repro pages, not live-load output.
-    if sha in seen or path in crawl_files or '/vendor/' in '/' + path:
+    if (sha, crawl) in seen or '/vendor/' in '/' + path:
         continue
-    seen.add(sha)
+    seen.add((sha, crawl))
     blob = subprocess.run(['git', 'cat-file', 'blob', sha], capture_output=True).stdout
     if b'\0' in blob[:8000]:
-        if path.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+        if not crawl and path.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
             images.append((path, blob, sha))
         continue
     text = blob.decode('utf8', 'replace')
-    for name, pat in patterns.items():
+    for name, pat in (secret_patterns if crawl else patterns | secret_patterns).items():
         hits = [h for h in pat.findall(text) if h not in allowed and not bug_link.fullmatch(h)]
         if hits:
             found += 1
