@@ -10,7 +10,8 @@ import re
 import shlex
 import sys
 
-UPDATES = os.path.expanduser("~/Library/Caches/Mozilla/updates/Applications")
+# Firefox stages updates per install: <UPDATES>/<bundle path without .app>/updates/0.
+UPDATES = os.path.expanduser("~/Library/Caches/Mozilla/updates")
 
 hook_input = json.load(sys.stdin)
 command = hook_input.get("tool_input", {}).get("command", "")
@@ -65,17 +66,35 @@ def launches_firefox():
 if not launches_firefox():
     sys.exit(0)
 
-text = "\n".join([command, *python_sources()])
-apps = set(re.findall(r"/Applications/([^/\"'\n]+)\.app", text))
-if apps:
-    statuses = [f"{UPDATES}/{app}/updates/0/update.status" for app in sorted(apps)]
+def bundles_in_command():
+    try:
+        tokens = shlex.split(command)
+    except ValueError:
+        tokens = command.split()
+    for token in tokens:
+        m = re.match(r"((?:~|/)[^\n]*?)\.app(?:/|$)", token)
+        if m:
+            yield os.path.expanduser(m.group(1))
+
+
+def bundles_in_sources():
+    for source in python_sources():
+        for m in re.finditer(r"[\"']((?:~|/)[^\"'\n]*?)\.app(?:/[^\"'\n]*)?[\"']", source):
+            yield os.path.expanduser(m.group(1))
+
+
+# A bundle named in the command (e.g. a local build passed as an argument) wins over defaults in
+# the scripts it runs.
+bundles = set(bundles_in_command()) or set(bundles_in_sources())
+if bundles:
+    statuses = [f"{UPDATES}/{b.lstrip('/')}/updates/0/update.status" for b in sorted(bundles)]
 else:
     # Selenium and wpt pick an installed Firefox themselves; check them all.
-    statuses = sorted(glob.glob(f"{UPDATES}/*/updates/0/update.status"))
+    statuses = sorted(glob.glob(f"{UPDATES}/Applications/*/updates/0/update.status"))
 
 for status in statuses:
     if os.path.exists(status):
-        app_name = status[len(UPDATES) + 1 :].split("/")[0]
+        app_name = status[len(UPDATES) + 1 :].split("/updates/0/")[0].split("/")[-1]
         print(
             f"{app_name} has a staged update ({status} exists). Ask the user to restart "
             f"{app_name}, and don't launch it via WebDriver until that file is gone.",
