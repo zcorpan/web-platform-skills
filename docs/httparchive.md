@@ -1,10 +1,10 @@
 # Web compat research with the `httparchive` skill
 
-The `httparchive` skill helps Claude answer "how many pages use this?" and "is this spec or browser
-change web compatible?", and the `httparchive-qa` skill "does this implementation match the others?" It finds the pages
-in public crawl data (Common Crawl for free, HTTP Archive's billed BigQuery tables for counts and
-popularity), loads a sample in a real browser in each setup, reviews the differences, and writes it
-all up in a reproducible git repo you can publish.
+The `httparchive` skill helps an AI agent answer "how many pages use this?" and "is this spec or
+browser change web compatible?", and the `httparchive-qa` skill "does this implementation match the
+others?" It finds the pages in public crawl data (Common Crawl for free, HTTP Archive's billed
+BigQuery tables for counts and popularity), loads a sample in a real browser in each setup, reviews
+the differences, and writes it all up in a reproducible git repo you can publish.
 
 ## Where the data comes from
 
@@ -40,15 +40,15 @@ before spending money on HTTP Archive.
 
 1. You describe the change and, if you know, how to find affected pages: a use counter, or a
    pattern in markup, CSS or scripts (see Prompting below).
-2. Claude finds candidate pages: by use counter in HTTP Archive, or for patterns by scanning
+2. The agent finds candidate pages: by use counter in HTTP Archive, or for patterns by scanning
    Common Crawl first and then running one HTTP Archive query for counts and popularity ranks.
-3. Before the long part of the run, while you're there, Claude tries the queries at small scale (a
-   dry run shows how much data each would read), checks that it can drive each browser and switch
+3. Before the long part of the run, while you're there, the agent tries the queries at small scale
+   (a dry run shows how much data each would read), checks that it can drive each browser and switch
    the change, gets anything only you can do out of the way (a build, enabling a browser driver),
    and asks you once about scope and a budget for the whole run, with a rough guess of how long it
-   will take. After that it runs to the end without stopping, except for a query over the budget
-   or early results that already rule the change out. A status page it opens in your browser
-   shows the current step, the time left, and the findings so far.
+   will take. After that it runs to the end without stopping, except for a query over the budget or
+   early results that already rule the change out. A status page it opens in your browser shows the
+   current step, the time left, and the findings so far.
 4. It loads the pages live: today's behavior twice (to see what changes on its own, like ads and
    carousels) and with the change once. The change comes from a browser flag or pref, a build you
    provide, or by rewriting the page. It records JS errors, console messages, layout, and
@@ -61,9 +61,9 @@ before spending money on HTTP Archive.
    images, and a README. A pre-commit hook checks that nothing that identifies you (your IP or
    location, which live pages can show) gets committed, and no images of adult pages: those are
    marked "nsfw" and get a minimal repro test instead.
-8. Claude drafts a comment for the spec issue or bug. When you're happy with it, it gives you the
+8. The agent drafts a comment for the spec issue or bug. When you're happy with it, it gives you the
    commands to create the GitHub repo and post the comment, and you run them.
-   If the run hit something the skill got wrong or should have said, Claude then offers a PR
+   If the run hit something the skill got wrong or should have said, the agent then offers a PR
    to improve the skill with the general lessons. It doesn't for research you keep private.
 
 ## QA runs
@@ -73,7 +73,7 @@ implementation of a feature against other browsers', a flag or pref, a new build
 extension against native support. Start it with "httparchive qa for &lt;feature>", plus any details
 you care about (browsers, pages, budget, how long to run).
 
-Before anything long runs, Claude finds where the feature is used and which libraries are behind
+Before anything long runs, the agent finds where the feature is used and which libraries are behind
 it, checks that it can drive each browser, and runs a first small query. Then it asks you once
 about scope, with defaults: browsers and channels (including the candidate with the feature turned
 off, to tell the feature's bugs from other differences), which pages, which interactions, a budget
@@ -90,7 +90,7 @@ When you ask, it files one issue per finding.
 
 ## Prompting
 
-Both styles work: a detailed prompt up front, or a short one that you steer as it goes. Claude
+Both styles work: a detailed prompt up front, or a short one that you steer as it goes. The agent
 asks before anything billed or outward-facing (BigQuery queries, pushes, posts).
 
 A detailed prompt covers:
@@ -102,13 +102,13 @@ A detailed prompt covers:
   or how to emulate it.
 - The budget: a per-query or total cap.
 
-Claude picks defaults for the rest (crawl date, desktop or mobile, sample size); mention them only
-if you have a preference.
+The agent picks defaults for the rest (crawl date, desktop or mobile, sample size); mention them
+only if you have a preference.
 
 A short prompt like "run httparchive analysis for &lt;issue>; there's no use counter, search
-response bodies for X" also works. Claude works out the rest from the issue and keeps going until it
-needs you, such as to approve the first billed query or to provide a browser build. Correct course
-along the way if its choices don't match what you want.
+response bodies for X" also works. The agent works out the rest from the issue and keeps going until
+it needs you, such as to approve the first billed query or to provide a browser build. Correct
+course along the way if its choices don't match what you want.
 
 ## Examples
 
@@ -133,7 +133,8 @@ QA runs made with the `httparchive-qa` skill:
 
 ## What you need
 
-- Claude Code with this plugin (see [Install](../README.md#install)).
+- An agent with the skills installed, such as Claude Code with this plugin (see
+  [Install](../README.md#install)).
 - For HTTP Archive: a Google Cloud project with billing enabled, and the
   [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), which includes `bq`; run
   `gcloud auth login`, then set a default project to bill. BigQuery bills by data read, not rows
@@ -141,19 +142,19 @@ QA runs made with the `httparchive-qa` skill:
   ([pricing](https://cloud.google.com/bigquery/pricing)). Use counters for all root pages in one
   crawl are about 0.1 TiB (under $1); searching every response body in one crawl is about 200 TiB
   (over $1,000), which is why the skill tries searches on Common Crawl and HTTP Archive's 10k-page
-  sample tables first. Tell Claude your budget; it caps every query and shows the size and cost
+  sample tables first. Tell the agent your budget; it caps every query and shows the size and cost
   before running it.
-- Python 3. Claude sets up a virtual environment for the scripts.
+- Python 3. The agent sets up a virtual environment for the scripts.
 - The browsers to test in, such as Chrome Canary, Firefox Nightly or Safari Technology Preview, or
   your own engine build with the change. The scripts drive them with Playwright (Chromium) or
   Selenium (Firefox and Safari), installed in the virtual environment; no browser MCP server is
   needed. Safari TP needs a one-time setup on macOS: run its `safaridriver --enable`
   (`/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver --enable`, which asks
-  for your password) and allow remote automation in its developer settings. Claude checks these
+  for your password) and allow remote automation in its developer settings. The agent checks these
   before a long run, since remote automation can turn off again after an update.
 - For mobile: Chrome emulates the crawl's mobile client (screen size, user agent, touch). Firefox
-  and Safari can't be emulated the same way: Claude can approximate Firefox on desktop with prefs,
-  or drive Firefox for Android on a device or emulator; for WebKit it uses Safari in the iOS
+  and Safari can't be emulated the same way: the agent can approximate Firefox on desktop with
+  prefs, or drive Firefox for Android on a device or emulator; for WebKit it uses Safari in the iOS
   Simulator, which needs Xcode with an iOS runtime installed (release Safari, not TP).
 - Optionally, disk space for Common Crawl WARCs (about 1 GB each).
 
@@ -170,7 +171,7 @@ QA runs made with the `httparchive-qa` skill:
   defaults, and sites can tell emulation apart. Safari TP runs one page at a time, so Safari runs
   take longest.
 - Results come from a sample: 0 broken out of 150 doesn't mean 0 on the web.
-- Pages can contain text aimed at AI agents. Claude treats crawl and page content as data, not
+- Pages can contain text aimed at AI agents. The agent treats crawl and page content as data, not
   instructions, hands it to reviewer agents that can only read files, and keeps pushes, posts, and
   billed queries beyond your budget gated on you, but that isn't a guarantee.
-- Claude makes mistakes. Look at the repo and the review images before relying on the conclusion.
+- Agents make mistakes. Look at the repo and the review images before relying on the conclusion.
