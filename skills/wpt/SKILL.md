@@ -33,7 +33,7 @@ description: Use when writing, running, or debugging web-platform-tests (wpt), o
   - Firefox Nightly (`firefox-nightly-mcp`): `close_firefox_session`.
   - Chrome Canary (`chrome-canary-mcp`): `kill` the Canary main process that is a child of this session's `chrome-devtools-mcp`.
   - Safari TP (`safari-tp-mcp`, safaridriver): `kill` the `--automation` Safari TP process started (`ps -o lstart`) inside your test window; it's reparented to pid 1.
-- Other sessions' browsers and MCP servers may be running: kill only yours. This session's MCP servers are children of the `claude` process that is an ancestor of your shell. Check `ps` for leftovers afterwards.
+- Other sessions' browsers and MCP servers may be running: kill only yours. This session's MCP servers are children of the agent's process (under Claude Code, `claude`) that is an ancestor of your shell. Check `ps` for leftovers afterwards.
 - If the user may want to test manually (e.g. you gave them a URL on a local server), leave it running and offer to stop it later.
 
 ## Writing tests

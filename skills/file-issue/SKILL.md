@@ -15,7 +15,7 @@ description: Use when drafting or filing a spec issue (WHATWG, W3C, or other Git
 - Hedge implementation claims ("appear to run", "seems to") only when inferred from test results alone. If the engine source has also been read, state it with confidence ("runs"). Report observed behavior, not code.
 - If the problem is spec-only and no browser distinguishes, omit browsers entirely. Don't report "couldn't reproduce".
 - Never say "all engines" or "all three". Name the tested browsers/engines, pick one naming scheme, and state the channel. Say "Safari TP" when the tested browser was Safari Technology Preview; plain "Safari" means release.
-- Issues containing an AI-drafted plan: open with a first-person paragraph (not `<details>`) saying it was drafted with Claude Code (model name), what was explored, and which decisions the user made; then put the whole plan in a block quote. Example: validator/validator#2143.
+- Issues containing an AI-drafted plan: open with a first-person paragraph (not `<details>`) saying which agent it was drafted with (e.g. Claude Code, and the model name), what was explored, and which decisions the user made; then put the whole plan in a block quote. Example: validator/validator#2143.
 
 ## Implementation bugs
 
