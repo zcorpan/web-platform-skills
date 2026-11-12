@@ -1,7 +1,7 @@
 .venv/
 __pycache__/
-out*/shots/
-out*/review-nsfw/
+out*/**/shots/
+out*/**/review-nsfw/
 *.log
 .publish-terms
 # Notes for improving the skill (its SKILL.md, Improving the skill); not published
