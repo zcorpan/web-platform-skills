@@ -32,7 +32,8 @@ patterns = {
     'IP address': re.compile(r'(?<![\d./v])(?!127\.0\.0\.1|0\.0\.0\.0)(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)(?![\d.])|(?<![\w/:])(?:[0-9a-f]{1,4}:){4,7}[0-9a-f]{1,4}\b', re.I),
     'URL with query string': re.compile(r'[a-z][a-z0-9+.-]*://[^\s"\'<>,\\]+\?[^\s"\'<>,\\]*[=&][^\s"\'<>,\\]*'),
     'country-specific host': re.compile(r'\b(?:google|bing|yahoo|amazon|facebook)\.(?:co\.)?(?!com\b|net\b|org\b)[a-z]{2}\b'),
-    'long base64 payload': re.compile(r'(?<!base64,)(?<![A-Za-z0-9+/_-])[A-Za-z0-9+/_-]{200,}={0,2}'),
+    # Base64 mixes cases and digits; a long URL slug doesn't.
+    'long base64 payload': re.compile(r'(?<!base64,)(?<![A-Za-z0-9+/_-])(?=[a-z0-9+/_-]*[A-Z])(?=[A-Z0-9+/_-]*[a-z])(?=[A-Za-z+/_-]*\d)[A-Za-z0-9+/_-]{200,}={0,2}'),
 }
 # Tokens that web pages and URLs carry and GitHub alerts on in public repos, see
 # https://docs.github.com/en/code-security/secret-scanning/introduction/supported-secret-scanning-patterns
