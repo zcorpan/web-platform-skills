@@ -132,7 +132,7 @@ def bundles_in_command():
     except ValueError:
         tokens = command.split()
     for token in tokens:
-        m = re.match(r"((?:~|/)[^\n]*?)\.app(?:/|$)", token)
+        m = re.match(r"(?:\w+=)?((?:~|/)[^\n]*?)\.app(?:/|$)", token)
         if m:
             yield os.path.expanduser(m.group(1))
 
